@@ -1,0 +1,390 @@
+import React, { useState } from 'react';
+import { 
+  LineChart, BarChart2, TrendingUp, TrendingDown, RefreshCw,
+  ChevronDown, Star, Search, AlertCircle, Zap, 
+  ArrowUpDown, Eye, Clock, DollarSign
+} from 'lucide-react';
+
+const MarketDataTab = () => {
+  const [selectedPair, setSelectedPair] = useState('CBRS/SOL');
+  const [timeframe, setTimeframe] = useState('15m');
+  const [chartType, setChartType] = useState('candles');
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Market Data</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <RefreshCw size={14} className="mr-2" />
+            Refresh Data
+          </button>
+        </div>
+      </div>
+      
+      {/* Trading Pair Selector and Controls */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div>
+              <label className="block text-xs text-purple-300 mb-1">Trading Pair</label>
+              <MarketDropdown 
+                options={['CBRS/SOL', 'SOL/USDC', 'JUP/USDC', 'BONK/USDC', 'PYTH/USDC']} 
+                selected={selectedPair} 
+                onChange={setSelectedPair}
+                width="w-32"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs text-purple-300 mb-1">Timeframe</label>
+              <div className="flex bg-zinc-900 rounded overflow-hidden p-0.5">
+                {['1m', '5m', '15m', '1h', '4h', '1d'].map(time => (
+                  <button 
+                    key={time}
+                    className={`px-2 py-1 text-xs rounded ${
+                      timeframe === time 
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]' 
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                    onClick={() => setTimeframe(time)}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-xs text-purple-300 mb-1">Chart Type</label>
+              <div className="flex bg-zinc-900 rounded overflow-hidden p-0.5">
+                <button 
+                  className={`flex items-center px-2 py-1 text-xs rounded ${
+                    chartType === 'candles' 
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]' 
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                  onClick={() => setChartType('candles')}
+                >
+                  <BarChart2 size={12} className="mr-1" />
+                  Candles
+                </button>
+                <button 
+                  className={`flex items-center px-2 py-1 text-xs rounded ${
+                    chartType === 'line' 
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]' 
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                  onClick={() => setChartType('line')}
+                >
+                  <LineChart size={12} className="mr-1" />
+                  Line
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center">
+            <div className="bg-zinc-900 rounded-lg px-3 py-1.5 mr-4">
+              <div className="flex items-center space-x-4">
+                <div>
+                  <div className="text-xs text-purple-300">Last Price</div>
+                  <div className="text-white font-medium">0.00125 SOL</div>
+                </div>
+                <div>
+                  <div className="text-xs text-purple-300">24h Change</div>
+                  <div className="text-green-400 font-medium flex items-center">
+                    <TrendingUp size={12} className="mr-1" />
+                    +5.2%
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-purple-300">24h Volume</div>
+                  <div className="text-white font-medium">25,367 SOL</div>
+                </div>
+              </div>
+            </div>
+            
+            <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+              <Star size={14} className="mr-2" />
+              Add to Favorites
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Chart Area */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Price Chart: {selectedPair}</h2>
+          <div className="flex items-center space-x-2">
+            <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+              <Search size={14} />
+            </button>
+            <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+              <RefreshCw size={14} />
+            </button>
+          </div>
+        </div>
+        <div className="h-96 p-4 bg-black relative">
+          {/* Placeholder for chart - in a real implementation this would be a chart component */}
+          <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-purple-600/5 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-pink-600/5 to-transparent"></div>
+          
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-zinc-700 font-bold text-4xl">CERBERUS</div>
+          </div>
+          
+          {/* Price Axis */}
+          <div className="absolute top-0 right-0 bottom-0 w-12 flex flex-col justify-between py-4 text-right">
+            <div className="text-xs text-zinc-500">0.00150</div>
+            <div className="text-xs text-zinc-500">0.00140</div>
+            <div className="text-xs text-zinc-500">0.00130</div>
+            <div className="text-xs text-zinc-500">0.00120</div>
+            <div className="text-xs text-zinc-500">0.00110</div>
+          </div>
+          
+          {/* Time Axis */}
+          <div className="absolute left-0 right-0 bottom-0 h-6 flex justify-between px-4 text-center">
+            <div className="text-xs text-zinc-500">09:00</div>
+            <div className="text-xs text-zinc-500">12:00</div>
+            <div className="text-xs text-zinc-500">15:00</div>
+            <div className="text-xs text-zinc-500">18:00</div>
+            <div className="text-xs text-zinc-500">21:00</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-6">
+        {/* Order Book */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Order Book</h2>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-3 text-xs text-purple-300 pb-2 mb-2">
+              <div>Price (SOL)</div>
+              <div className="text-right">Amount</div>
+              <div className="text-right">Total</div>
+            </div>
+            
+            {/* Sell Orders (Red) */}
+            <div className="space-y-1 mb-3">
+              {[
+                { price: '0.00128', amount: '5,230', total: '6.69' },
+                { price: '0.00127', amount: '3,450', total: '4.38' },
+                { price: '0.00126', amount: '8,750', total: '11.02' },
+                { price: '0.00125', amount: '2,100', total: '2.62' },
+              ].map((order, i) => (
+                <div key={i} className="grid grid-cols-3 text-sm">
+                  <div className="text-red-400">{order.price}</div>
+                  <div className="text-right text-zinc-300">{order.amount}</div>
+                  <div className="text-right text-zinc-500">{order.total}</div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Current Price */}
+            <div className="py-2 px-3 bg-purple-900/20 rounded-md border border-purple-900/30 grid grid-cols-3 text-sm mb-3">
+              <div className="text-white font-medium">0.00125</div>
+              <div className="text-right text-zinc-300">15,370</div>
+              <div className="text-right text-zinc-300">19.21</div>
+            </div>
+            
+            {/* Buy Orders (Green) */}
+            <div className="space-y-1">
+              {[
+                { price: '0.00124', amount: '7,890', total: '9.78' },
+                { price: '0.00123', amount: '5,670', total: '6.97' },
+                { price: '0.00122', amount: '9,320', total: '11.37' },
+                { price: '0.00121', amount: '4,210', total: '5.09' },
+              ].map((order, i) => (
+                <div key={i} className="grid grid-cols-3 text-sm">
+                  <div className="text-green-400">{order.price}</div>
+                  <div className="text-right text-zinc-300">{order.amount}</div>
+                  <div className="text-right text-zinc-500">{order.total}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Recent Trades */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Recent Trades</h2>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-4 text-xs text-purple-300 pb-2 mb-2">
+              <div>Price (SOL)</div>
+              <div className="text-right">Amount</div>
+              <div className="text-right">Total</div>
+              <div className="text-right">Time</div>
+            </div>
+            
+            <div className="space-y-2">
+              {[
+                { price: '0.00125', amount: '1,250', total: '1.56', time: '14:32:05', type: 'buy' },
+                { price: '0.00125', amount: '3,480', total: '4.35', time: '14:31:22', type: 'buy' },
+                { price: '0.00124', amount: '2,100', total: '2.60', time: '14:30:45', type: 'sell' },
+                { price: '0.00126', amount: '750', total: '0.94', time: '14:28:12', type: 'buy' },
+                { price: '0.00124', amount: '1,800', total: '2.23', time: '14:27:56', type: 'sell' },
+                { price: '0.00123', amount: '4,500', total: '5.53', time: '14:26:30', type: 'sell' },
+                { price: '0.00125', amount: '2,340', total: '2.92', time: '14:25:11', type: 'buy' },
+                { price: '0.00126', amount: '1,120', total: '1.41', time: '14:24:20', type: 'buy' },
+              ].map((trade, i) => (
+                <div key={i} className="grid grid-cols-4 text-sm">
+                  <div className={trade.type === 'buy' ? 'text-green-400' : 'text-red-400'}>
+                    {trade.price}
+                  </div>
+                  <div className="text-right text-zinc-300">{trade.amount}</div>
+                  <div className="text-right text-zinc-300">{trade.total}</div>
+                  <div className="text-right text-zinc-500">{trade.time}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Market Info */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Market Info</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-4">
+              <MarketInfoRow icon={<DollarSign size={16} />} label="Market Cap" value="$1,250,000" />
+              <MarketInfoRow icon={<BarChart2 size={16} />} label="24h Volume" value="$157,430" />
+              <MarketInfoRow icon={<Clock size={16} />} label="Listed" value="5 days ago" />
+              <MarketInfoRow icon={<Eye size={16} />} label="Holders" value="1,285" />
+              <MarketInfoRow icon={<Zap size={16} />} label="Liquidity" value="$250,500" />
+              
+              <div className="mt-6 pt-4 border-t border-zinc-800/50">
+                <div className="bg-purple-900/20 rounded-md p-3 flex items-start">
+                  <AlertCircle size={16} className="text-purple-400 mt-0.5 mr-2" />
+                  <div>
+                    <div className="text-sm text-white mb-1">Token Contract</div>
+                    <div className="text-xs text-zinc-400 break-all">0xc8F5Cdb6F25D59B10B1c6122a9e033f94F031746</div>
+                    <button className="mt-2 px-2 py-1 bg-zinc-900 rounded text-xs text-zinc-300">
+                      View on Explorer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Hot Markets Section */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex justify-between items-center">
+          <h2 className="text-lg font-medium text-white">Hot Markets</h2>
+          <div className="flex bg-zinc-900 rounded overflow-hidden p-0.5">
+            <button className="flex items-center px-3 py-1 text-xs rounded bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+              Top Gainers
+            </button>
+            <button className="flex items-center px-3 py-1 text-xs rounded text-zinc-400 hover:text-white">
+              Top Volume
+            </button>
+            <button className="flex items-center px-3 py-1 text-xs rounded text-zinc-400 hover:text-white">
+              New Listings
+            </button>
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-5 text-sm text-purple-300 pb-2 mb-2">
+            <div>Token</div>
+            <div>Price</div>
+            <div className="text-center">24h Change</div>
+            <div className="text-right">Volume</div>
+            <div className="text-right">Market Cap</div>
+          </div>
+          
+          <div className="space-y-2">
+            {[
+              { name: 'CERBERUS', symbol: 'CBRS', price: '$0.000125', change: '+15.2%', volume: '$157,430', marketCap: '$1.25M', positive: true },
+              { name: 'Jupiter', symbol: 'JUP', price: '$7.89', change: '+12.4%', volume: '$87.5M', marketCap: '$1.1B', positive: true },
+              { name: 'Raydium', symbol: 'RAY', price: '$3.45', change: '+8.7%', volume: '$12.7M', marketCap: '$320M', positive: true },
+              { name: 'Bonk', symbol: 'BONK', price: '$0.00003', change: '+6.2%', volume: '$45.3M', marketCap: '$780M', positive: true },
+              { name: 'Solana', symbol: 'SOL', price: '$152.34', change: '+2.3%', volume: '$2.1B', marketCap: '$65.2B', positive: true },
+            ].map((market, i) => (
+              <div key={i} className="grid grid-cols-5 text-sm py-2 bg-zinc-900/30 rounded-md px-3">
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2">
+                    {market.symbol.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-white">{market.name}</div>
+                    <div className="text-xs text-zinc-400">{market.symbol}</div>
+                  </div>
+                </div>
+                <div className="text-white self-center">{market.price}</div>
+                <div className={`text-center self-center flex items-center justify-center ${market.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  {market.positive ? <TrendingUp size={14} className="mr-1" /> : <TrendingDown size={14} className="mr-1" />}
+                  {market.change}
+                </div>
+                <div className="text-right text-zinc-300 self-center">{market.volume}</div>
+                <div className="text-right text-zinc-300 self-center">{market.marketCap}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Market Dropdown Component
+const MarketDropdown = ({ options, selected, onChange, width = "w-48" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={`${width} bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-left flex items-center justify-between focus:outline-none text-white shadow-[0_0_5px_rgba(168,85,247,0.25)]`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{selected}</span>
+        <ChevronDown size={16} className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-zinc-900 border border-purple-900/50 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="py-1">
+            {options.map((option) => (
+              <div
+                key={option}
+                className={`px-3 py-2 text-sm cursor-pointer hover:bg-purple-900/30 ${selected === option ? 'bg-purple-900/30 text-fuchsia-300' : 'text-white'}`}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Market Info Row Component
+const MarketInfoRow = ({ icon, label, value }) => {
+  return (
+    <div className="flex justify-between items-center">
+      <div className="flex items-center">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-900/30 flex items-center justify-center mr-2 text-purple-400">
+          {icon}
+        </div>
+        <div className="text-sm text-purple-300">{label}</div>
+      </div>
+      <div className="text-sm font-medium text-white">{value}</div>
+    </div>
+  );
+};
+
+export default MarketDataTab;

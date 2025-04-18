@@ -1,0 +1,575 @@
+import React, { useState } from 'react';
+import { 
+  ShoppingCart, Check, AlertTriangle, RefreshCw, 
+  ChevronDown, Clock, ArrowUpDown, PlusCircle, 
+  MinusCircle, Settings, ArrowRight, Zap
+} from 'lucide-react';
+
+const QuickBuysTab = () => {
+  const [selectedToken, setSelectedToken] = useState('CBRS');
+  const [buyAmount, setBuyAmount] = useState('0.1');
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Quick Buys</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <RefreshCw size={14} className="mr-2" />
+            Refresh Prices
+          </button>
+        </div>
+      </div>
+      
+      {/* Main Buy Panel */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Buy Form */}
+        <div className="col-span-2 bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Buy Token</h2>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Select Token
+                </label>
+                <TokenDropdown 
+                  options={[
+                    { name: 'CERBERUS', symbol: 'CBRS' }, 
+                    { name: 'Jupiter', symbol: 'JUP' }, 
+                    { name: 'Raydium', symbol: 'RAY' },
+                    { name: 'Solana', symbol: 'SOL' },
+                    { name: 'Bonk', symbol: 'BONK' }
+                  ]} 
+                  selected={selectedToken} 
+                  onChange={token => setSelectedToken(token)}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Selected Exchange
+                </label>
+                <MarketDropdown 
+                  options={['RaydiumDEX', 'JupiterDEX', 'Orca', 'Other DEX']} 
+                  selected={'RaydiumDEX'} 
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Buy Amount (SOL)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={buyAmount}
+                    onChange={(e) => setBuyAmount(e.target.value)}
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="absolute right-0 top-0 bottom-0 flex">
+                    <button className="px-3 text-zinc-400 border-l border-purple-900/50 flex items-center justify-center hover:text-white">
+                      SOL
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between mt-2">
+                  <button className="px-2 py-1 bg-zinc-900 rounded text-xs text-zinc-400 hover:text-white">25%</button>
+                  <button className="px-2 py-1 bg-zinc-900 rounded text-xs text-zinc-400 hover:text-white">50%</button>
+                  <button className="px-2 py-1 bg-zinc-900 rounded text-xs text-zinc-400 hover:text-white">75%</button>
+                  <button className="px-2 py-1 bg-zinc-900 rounded text-xs text-zinc-400 hover:text-white">100%</button>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  You Will Receive (Estimated)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value="80,000"
+                    readOnly
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="absolute right-0 top-0 bottom-0 flex">
+                    <button className="px-3 text-zinc-400 border-l border-purple-900/50 flex items-center justify-center hover:text-white">
+                      CBRS
+                    </button>
+                  </div>
+                </div>
+                <div className="text-xs text-purple-300 mt-2">
+                  ≈ $0.125 (@$0.00000125 per CBRS)
+                </div>
+              </div>
+            </div>
+            
+            {/* Advanced Options */}
+            <div className="mt-6">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-800/50 mb-4">
+                <h3 className="text-sm font-medium text-purple-300">Advanced Options</h3>
+                <button className="text-xs text-zinc-400 hover:text-white">
+                  Configure
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="auto-route" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="auto-route" className="text-xs text-zinc-300">Auto-route for best price</label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="slippage" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="slippage" className="text-xs text-zinc-300">Max Slippage: 1%</label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="priority" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="priority" className="text-xs text-zinc-300">Priority Fee: 0.0001 SOL</label>
+                </div>
+              </div>
+            </div>
+            
+            {/* Buy Button */}
+            <div className="mt-6">
+              <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-md text-white font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                <div className="flex items-center justify-center">
+                  <ShoppingCart size={18} className="mr-2" />
+                  Buy CBRS
+                </div>
+              </button>
+              
+              <div className="flex justify-between mt-3 text-xs text-zinc-400">
+                <span>Network Fee: ~0.000005 SOL</span>
+                <span>Exchange Fee: 0.25%</span>
+                <span>Route: RaydiumDEX</span>
+              </div>
+            </div>
+            
+            {/* Info Card */}
+            <div className="mt-6 bg-purple-900/20 rounded-md p-3 border border-purple-900/30">
+              <div className="flex">
+                <AlertTriangle size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                <div className="text-xs text-purple-300">
+                  This is a quick buy interface for standard market purchases. For more advanced trading strategies, use the specific trading bot features. Always ensure you have enough SOL in your wallet to cover the purchase cost plus network fees.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Panel - Buy Presets and Recent Buys */}
+        <div className="space-y-6">
+          {/* Buy Presets */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+              <h2 className="text-lg font-medium text-white">Buy Presets</h2>
+              <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+                <PlusCircle size={14} />
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="space-y-3">
+                <BuyPresetCard
+                  name="Standard CBRS Buy"
+                  token="CBRS"
+                  amount="0.1 SOL"
+                  features={["Auto-route", "1% Slippage"]}
+                />
+                <BuyPresetCard
+                  name="Small JUP Purchase"
+                  token="JUP"
+                  amount="0.05 SOL"
+                  features={["Via JupiterDEX", "0.5% Slippage"]}
+                />
+                <BuyPresetCard
+                  name="Max BONK Buy"
+                  token="BONK"
+                  amount="0.5 SOL"
+                  features={["Priority Fee", "3% Slippage"]}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Recent Buys */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="border-b border-purple-900/30 p-4">
+              <h2 className="text-lg font-medium text-white">Recent Buys</h2>
+            </div>
+            <div className="p-4">
+              <div className="space-y-3">
+                <RecentBuyCard
+                  token="CBRS"
+                  amount="1000 CBRS"
+                  value="0.00125 SOL"
+                  time="14:32:05"
+                  status="completed"
+                />
+                <RecentBuyCard
+                  token="JUP"
+                  amount="0.25 JUP"
+                  value="0.05 SOL"
+                  time="13:25:18"
+                  status="completed"
+                />
+                <RecentBuyCard
+                  token="SOL"
+                  amount="0.5 SOL"
+                  value="$76.17"
+                  time="12:45:30"
+                  status="pending"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Quick Buy Actions */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="border-b border-purple-900/30 p-4">
+              <h2 className="text-lg font-medium text-white">Quick Actions</h2>
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-2 gap-3">
+                <ActionButton
+                  icon={<Zap size={16} />}
+                  text="Active Bots"
+                  subtext="2 Running"
+                  color="from-purple-600 to-fuchsia-600"
+                />
+                <ActionButton
+                  icon={<ArrowUpDown size={16} />}
+                  text="Quick Sells"
+                  subtext="Manage Sells"
+                  color="from-pink-600 to-rose-600"
+                />
+                <ActionButton
+                  icon={<Settings size={16} />}
+                  text="Buy Settings"
+                  subtext="Configure"
+                  color="from-blue-600 to-cyan-600"
+                />
+                <ActionButton
+                  icon={<PlusCircle size={16} />}
+                  text="Add Wallet"
+                  subtext="New Wallet"
+                  color="from-emerald-600 to-teal-600"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Multi-Wallet Quick Buy Panel */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Multi-Wallet Quick Buy</h2>
+          <div>
+            <MarketDropdown 
+              options={['All Wallets', 'Group 1', 'Group 2', 'Group 3']} 
+              selected={'All Wallets'} 
+              width="w-32"
+            />
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex space-x-4">
+              <div>
+                <label className="block text-xs text-purple-300 mb-1">Token</label>
+                <TokenDropdown 
+                  options={[
+                    { name: 'CERBERUS', symbol: 'CBRS' }, 
+                    { name: 'Jupiter', symbol: 'JUP' }, 
+                    { name: 'Raydium', symbol: 'RAY' },
+                    { name: 'Solana', symbol: 'SOL' },
+                    { name: 'Bonk', symbol: 'BONK' }
+                  ]} 
+                  selected={selectedToken} 
+                  onChange={token => setSelectedToken(token)}
+                  width="w-40"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs text-purple-300 mb-1">Amount per Wallet</label>
+                <div className="relative w-40">
+                  <input
+                    type="text"
+                    value="0.01"
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="absolute right-0 top-0 bottom-0 flex">
+                    <button className="px-3 text-zinc-400 border-l border-purple-900/50 flex items-center justify-center hover:text-white">
+                      SOL
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-xs text-purple-300 mb-1">Slippage</label>
+                <div className="relative w-24">
+                  <input
+                    type="text"
+                    value="1.0"
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="absolute right-0 top-0 bottom-0 flex">
+                    <button className="px-2 text-zinc-400 border-l border-purple-900/50 flex items-center justify-center hover:text-white">
+                      %
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white font-medium shadow-[0_0_10px_rgba(168,85,247,0.5)] hover:shadow-[0_0_15px_rgba(168,85,247,0.7)] transition-shadow">
+              <div className="flex items-center">
+                <ShoppingCart size={16} className="mr-2" />
+                Buy for All Wallets
+              </div>
+            </button>
+          </div>
+          
+          <div className="overflow-auto max-h-64">
+            <table className="w-full">
+              <thead>
+                <tr className="text-sm text-purple-300 border-b border-zinc-800/50">
+                  <th className="pb-2 text-left font-normal">Wallet</th>
+                  <th className="pb-2 text-left font-normal">Balance</th>
+                  <th className="pb-2 text-right font-normal">Est. Receive</th>
+                  <th className="pb-2 text-right font-normal">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/30">
+                {[
+                  { address: '2Sybt...yMyGg', balance: '0.0063 SOL', receive: '800 CBRS', status: 'ready' },
+                  { address: '5xReE...os24k', balance: '0.0060 SOL', receive: '800 CBRS', status: 'ready' },
+                  { address: '232wM...ZfDrf', balance: '0.0057 SOL', receive: '800 CBRS', status: 'ready' },
+                  { address: '3WWx8...2NY2A', balance: '0.0059 SOL', receive: '800 CBRS', status: 'ready' },
+                  { address: '6dwZi...Wf7e7', balance: '0.0063 SOL', receive: '800 CBRS', status: 'ready' }
+                ].map((wallet, i) => (
+                  <tr key={i} className="text-sm">
+                    <td className="py-3 text-white">{wallet.address}</td>
+                    <td className="py-3 text-blue-300">{wallet.balance}</td>
+                    <td className="py-3 text-right text-zinc-300">{wallet.receive}</td>
+                    <td className="py-3 text-right">
+                      {wallet.status === 'ready' ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-900/30 text-green-400">
+                          <Check size={12} className="mr-1" />
+                          Ready
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-yellow-900/30 text-yellow-400">
+                          <AlertTriangle size={12} className="mr-1" />
+                          Low Balance
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Token Dropdown Component
+const TokenDropdown = ({ options, selected, onChange, width = "w-full" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(opt => opt.symbol === selected) || options[0];
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={`${width} bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-left flex items-center justify-between focus:outline-none text-white shadow-[0_0_5px_rgba(168,85,247,0.25)]`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2">
+            {selectedOption.symbol.charAt(0)}
+          </div>
+          <span>{selectedOption.name} ({selectedOption.symbol})</span>
+        </div>
+        <ChevronDown size={16} className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-zinc-900 border border-purple-900/50 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="py-1">
+            {options.map((option) => (
+              <div
+                key={option.symbol}
+                className={`px-3 py-2 text-sm cursor-pointer hover:bg-purple-900/30 ${
+                  selected === option.symbol ? 'bg-purple-900/30 text-fuchsia-300' : 'text-white'
+                }`}
+                onClick={() => {
+                  onChange(option.symbol);
+                  setIsOpen(false);
+                }}
+              >
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2">
+                    {option.symbol.charAt(0)}
+                  </div>
+                  <span>{option.name} ({option.symbol})</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Market Dropdown Component
+const MarketDropdown = ({ options, selected, onChange, width = "w-full" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={`${width} bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-left flex items-center justify-between focus:outline-none text-white shadow-[0_0_5px_rgba(168,85,247,0.25)]`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{selected}</span>
+        <ChevronDown size={16} className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-zinc-900 border border-purple-900/50 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="py-1">
+            {options.map((option) => (
+              <div
+                key={option}
+                className={`px-3 py-2 text-sm cursor-pointer hover:bg-purple-900/30 ${
+                  selected === option ? 'bg-purple-900/30 text-fuchsia-300' : 'text-white'
+                }`}
+                onClick={() => {
+                  onChange && onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Buy Preset Card Component
+const BuyPresetCard = ({ name, token, amount, features }) => {
+  return (
+    <div className="p-3 bg-zinc-900/70 rounded-md border border-zinc-800/50 hover:border-purple-900/30 transition-colors">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-medium text-white">{name}</h3>
+        <button className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white">
+          <Settings size={12} />
+        </button>
+      </div>
+      <div className="flex justify-between items-center mb-2">
+        <div className="text-xs text-zinc-400">Token: <span className="text-blue-400">{token}</span></div>
+        <div className="text-xs text-zinc-400">Amount: <span className="text-purple-300">{amount}</span></div>
+      </div>
+      <div className="flex flex-wrap gap-1 mb-2">
+        {features.map((feature, i) => (
+          <span key={i} className="text-xs px-1.5 py-0.5 rounded bg-purple-900/20 text-purple-300">
+            {feature}
+          </span>
+        ))}
+      </div>
+      <button className="w-full mt-1 px-2 py-1 bg-gradient-to-r from-purple-600/80 to-pink-600/80 rounded text-xs text-white hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center justify-center">
+        <ShoppingCart size={10} className="mr-1" />
+        Buy Now
+      </button>
+    </div>
+  );
+};
+
+// Recent Buy Card Component
+const RecentBuyCard = ({ token, amount, value, time, status }) => {
+  return (
+    <div className="p-3 bg-zinc-900/70 rounded-md border border-zinc-800/50">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="flex items-center">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2 text-xs">
+              {token.charAt(0)}
+            </div>
+            <div className="text-sm font-medium text-white">{token}</div>
+          </div>
+          <div className="mt-1 flex items-center">
+            <div className="text-xs text-zinc-400">Amount: <span className="text-purple-300">{amount}</span></div>
+            <div className="text-xs text-zinc-400 mx-2">•</div>
+            <div className="text-xs text-zinc-400">Value: <span className="text-purple-300">{value}</span></div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="text-xs text-zinc-500 flex items-center">
+            <Clock size={10} className="mr-1" />
+            {time}
+          </div>
+          <div className="mt-1">
+            {status === 'completed' ? (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-900/30 text-green-400">
+                <Check size={10} className="mr-1" />
+                Completed
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-900/30 text-yellow-400">
+                <Clock size={10} className="mr-1" />
+                Pending
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Action Button Component
+const ActionButton = ({ icon, text, subtext, color }) => {
+  return (
+    <button className={`flex items-center p-3 bg-gradient-to-r ${color} rounded-md shadow-[0_0_10px_rgba(168,85,247,0.25)] hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-shadow`}>
+      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mr-3">
+        {icon}
+      </div>
+      <div className="text-left">
+        <div className="text-sm font-medium text-white">{text}</div>
+        <div className="text-xs text-white/70">{subtext}</div>
+      </div>
+      <ArrowRight size={14} className="ml-auto text-white/70" />
+    </button>
+  );
+};
+
+export default QuickBuysTab;

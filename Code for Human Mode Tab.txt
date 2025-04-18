@@ -1,0 +1,766 @@
+import React, { useState } from 'react';
+import { 
+  Users, Play, Pause, Settings, RefreshCw, 
+  ChevronDown, Clock, ArrowUpDown, Sliders, 
+  Info, AlertTriangle, Check, X, BarChart2,
+  Zap, Shield, Activity, PlusCircle, MinusCircle
+} from 'lucide-react';
+
+const HumanModeTab = () => {
+  const [isActive, setIsActive] = useState(false);
+  const [selectedToken, setSelectedToken] = useState('CBRS');
+  const [selectedStrategy, setSelectedStrategy] = useState('Time-Based');
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Human Mode</h1>
+        <div className="flex space-x-2">
+          <button 
+            className={`flex items-center px-4 py-2 rounded text-white text-sm font-medium ${
+              isActive 
+                ? 'bg-gradient-to-r from-red-600 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                : 'bg-gradient-to-r from-emerald-600 to-green-600 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+            }`}
+            onClick={() => setIsActive(!isActive)}
+          >
+            {isActive ? (
+              <>
+                <Pause size={16} className="mr-2" />
+                Stop Human Mode
+              </>
+            ) : (
+              <>
+                <Play size={16} className="mr-2" />
+                Start Human Mode
+              </>
+            )}
+          </button>
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <RefreshCw size={14} className="mr-2" />
+            Refresh Status
+          </button>
+        </div>
+      </div>
+      
+      {/* Status Panel */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <Users className="text-purple-400 mr-2" size={18} />
+            <h2 className="text-lg font-medium text-white">Human Mode Status</h2>
+          </div>
+          <div className={`px-3 py-1 rounded-full text-sm flex items-center ${
+            isActive 
+              ? 'bg-green-900/30 text-green-400' 
+              : 'bg-zinc-900 text-zinc-400'
+          }`}>
+            <div className={`w-2 h-2 rounded-full mr-2 ${
+              isActive ? 'bg-green-400' : 'bg-zinc-600'
+            }`}></div>
+            {isActive ? 'Active' : 'Inactive'}
+          </div>
+        </div>
+        <div className="p-5">
+          <div className="grid grid-cols-4 gap-6">
+            <StatusCard 
+              title="Active Session"
+              value={isActive ? "00:15:42" : "00:00:00"}
+              icon={<Clock size={16} />}
+              color="purple"
+              isActive={isActive}
+            />
+            <StatusCard 
+              title="Trades Made"
+              value={isActive ? "3" : "0"}
+              icon={<ArrowUpDown size={16} />}
+              color="pink"
+              isActive={isActive}
+            />
+            <StatusCard 
+              title="Current Delay"
+              value={isActive ? "1.2s - 3.5s" : "0s"}
+              icon={<Activity size={16} />}
+              color="blue"
+              isActive={isActive}
+            />
+            <StatusCard 
+              title="Volume Pattern"
+              value={isActive ? "Medium" : "None"}
+              icon={<BarChart2 size={16} />}
+              color="cyan"
+              isActive={isActive}
+            />
+          </div>
+          
+          {isActive && (
+            <div className="mt-6 bg-purple-900/20 rounded-md p-3 border border-purple-900/30">
+              <div className="flex">
+                <Info size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                <div>
+                  <div className="text-sm text-white">Human Mode is actively running</div>
+                  <div className="text-xs text-purple-300 mt-1">
+                    The system is simulating human trading behavior for CBRS token with random delays between actions to avoid bot detection. Anti-MEV protection is active.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Configuration Panel */}
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Human Mode Configuration</h2>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Select Token
+                </label>
+                <TokenDropdown 
+                  options={[
+                    { name: 'CERBERUS', symbol: 'CBRS' }, 
+                    { name: 'Jupiter', symbol: 'JUP' }, 
+                    { name: 'Raydium', symbol: 'RAY' },
+                    { name: 'Solana', symbol: 'SOL' },
+                    { name: 'Bonk', symbol: 'BONK' }
+                  ]} 
+                  selected={selectedToken} 
+                  onChange={token => setSelectedToken(token)}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Trading Strategy
+                </label>
+                <MarketDropdown 
+                  options={['Time-Based', 'Volume-Based', 'Pattern-Based', 'Random']} 
+                  selected={selectedStrategy} 
+                  onChange={setSelectedStrategy}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Buy Delay Range (seconds)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="1.2"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">min</div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="3.5"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">max</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Sell Delay Range (seconds)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="1.8"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">min</div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="4.2"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">max</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Trading Amount Range (SOL)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="0.01"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">min</div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="0.05"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">max</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-purple-300 mb-2">
+                  Number of Trades
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="5"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">buys</div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      defaultValue="3"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-zinc-500">sells</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Advanced Options */}
+            <div className="mt-6">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-800/50 mb-4">
+                <h3 className="text-sm font-medium text-purple-300">Advanced Options</h3>
+                <button className="text-xs text-zinc-400 hover:text-white">
+                  Configure
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="anti-mev" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="anti-mev" className="text-xs text-zinc-300">Anti-MEV Protection</label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="random-wallet" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="random-wallet" className="text-xs text-zinc-300">Random Wallet Selection</label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="human-headers" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="human-headers" className="text-xs text-zinc-300">Use Human Headers</label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="checkbox" 
+                    id="jitter" 
+                    className="rounded bg-zinc-900 border-purple-900/50 text-purple-500"
+                    defaultChecked 
+                  />
+                  <label htmlFor="jitter" className="text-xs text-zinc-300">Add Request Jitter</label>
+                </div>
+              </div>
+              
+              <div className="bg-zinc-900/70 rounded p-3 mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-xs text-purple-300">Human Pattern Intensity</label>
+                  <span className="text-xs text-white">70%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  defaultValue="70"
+                  className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-zinc-700"
+                />
+                <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                  <span>Bot-like</span>
+                  <span>Human-like</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-2 grid grid-cols-2 gap-3">
+              <div>
+                <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-md text-white font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <div className="flex items-center justify-center">
+                    <Settings size={18} className="mr-2" />
+                    Save Configuration
+                  </div>
+                </button>
+              </div>
+              <div>
+                <button className={`w-full px-4 py-3 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-red-600 to-orange-600 shadow-[0_0_15px_rgba(239,68,68,0.5)]'
+                    : 'bg-gradient-to-r from-emerald-600 to-green-600 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+                } rounded-md text-white font-medium hover:shadow-[0_0_20px_rgba(239,68,68,0.7)] transition-shadow`}>
+                  <div className="flex items-center justify-center">
+                    {isActive ? (
+                      <>
+                        <Pause size={18} className="mr-2" />
+                        Stop Human Mode
+                      </>
+                    ) : (
+                      <>
+                        <Play size={18} className="mr-2" />
+                        Start Human Mode
+                      </>
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Panel - Activity Log and Presets */}
+        <div className="space-y-6">
+          {/* Activity Log */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+              <h2 className="text-lg font-medium text-white">Activity Log</h2>
+              <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+                <RefreshCw size={14} />
+              </button>
+            </div>
+            <div className="p-4 h-80 overflow-auto">
+              <div className="space-y-2">
+                {isActive ? (
+                  <>
+                    <ActivityLogItem
+                      time="14:32:05"
+                      action="Buy executed"
+                      details="0.02 SOL for CBRS"
+                      status="success"
+                    />
+                    <ActivityLogItem
+                      time="14:29:18"
+                      action="Human delay"
+                      details="Waiting 2.3s"
+                      status="info"
+                    />
+                    <ActivityLogItem
+                      time="14:27:52"
+                      action="Buy executed"
+                      details="0.015 SOL for CBRS"
+                      status="success"
+                    />
+                    <ActivityLogItem
+                      time="14:25:40"
+                      action="Buy executed"
+                      details="0.01 SOL for CBRS"
+                      status="success"
+                    />
+                    <ActivityLogItem
+                      time="14:23:15"
+                      action="Session started"
+                      details="Human Mode activated"
+                      status="info"
+                    />
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full py-10 text-zinc-500">
+                    <Users size={40} className="mb-3 opacity-50" />
+                    <p className="text-sm">Human Mode is not active</p>
+                    <p className="text-xs mt-1">Start Human Mode to see activity logs</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Preset Configurations */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+              <h2 className="text-lg font-medium text-white">Preset Configurations</h2>
+              <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+                <PlusCircle size={14} />
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="space-y-3">
+                <PresetCard
+                  name="Conservative CBRS"
+                  description="Slow trades, small amounts"
+                  values={{
+                    delay: "3.5s - 5.2s",
+                    amount: "0.01 - 0.02 SOL",
+                    trades: "3 buys, 2 sells"
+                  }}
+                />
+                <PresetCard
+                  name="Aggressive JUP"
+                  description="Fast trades, larger amounts"
+                  values={{
+                    delay: "1.2s - 2.5s",
+                    amount: "0.05 - 0.1 SOL",
+                    trades: "8 buys, 5 sells"
+                  }}
+                />
+                <PresetCard
+                  name="Balanced SOL"
+                  description="Medium pace, moderate amounts"
+                  values={{
+                    delay: "2.0s - 3.8s",
+                    amount: "0.02 - 0.05 SOL",
+                    trades: "5 buys, 3 sells"
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Info Panel */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+            <div className="p-4">
+              <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-md p-3 border border-purple-900/30">
+                <div className="flex">
+                  <AlertTriangle size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-sm text-white">About Human Mode</div>
+                    <div className="text-xs text-purple-300 mt-1">
+                      Human Mode simulates human trading behavior by adding randomized delays, varying transaction sizes, and implementing human-like patterns to avoid bot detection on exchanges. This helps prevent MEV attacks and reduces the chance of transactions being front-run.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Human Behavior Pattern Visualization */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4">
+          <h2 className="text-lg font-medium text-white">Human Behavior Pattern</h2>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-5 gap-6">
+            <PatternCard
+              title="Transaction Timing"
+              value={isActive ? "Natural" : "Not Active"}
+              icon={<Clock size={16} />}
+              details="Random delays with human-like distribution"
+              isActive={isActive}
+            />
+            <PatternCard
+              title="Order Sizes"
+              value={isActive ? "Varied" : "Not Active"}
+              icon={<Sliders size={16} />}
+              details="Non-uniform amounts that appear organic"
+              isActive={isActive}
+            />
+            <PatternCard
+              title="MEV Protection"
+              value={isActive ? "Active" : "Not Active"}
+              icon={<Shield size={16} />}
+              details="Prevents transaction front-running"
+              isActive={isActive}
+            />
+            <PatternCard
+              title="Trading Pattern"
+              value={isActive ? "Randomized" : "Not Active"}
+              icon={<Activity size={16} />}
+              details="Unpredictable buy/sell sequence"
+              isActive={isActive}
+            />
+            <PatternCard
+              title="Network Signature"
+              value={isActive ? "Masked" : "Not Active"}
+              icon={<Users size={16} />}
+              details="Human-like request patterns and headers"
+              isActive={isActive}
+            />
+          </div>
+          
+          {/* Visualization Area */}
+          <div className="mt-6 border border-zinc-800/50 rounded-lg p-4 h-40 bg-black/50 flex items-center justify-center">
+            {isActive ? (
+              <div className="relative w-full h-full">
+                <div className="text-zinc-700 text-xs absolute top-0 left-0">Human Pattern Visualization</div>
+                
+                {/* Pattern dots - these would be dynamically generated in a real implementation */}
+                <div className="absolute top-1/4 left-1/5 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.7)]"></div>
+                <div className="absolute top-3/5 left-2/5 w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_5px_rgba(236,72,153,0.7)]"></div>
+                <div className="absolute top-2/5 left-1/2 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.7)]"></div>
+                <div className="absolute top-3/4 left-3/4 w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_5px_rgba(6,182,212,0.7)]"></div>
+                <div className="absolute top-1/3 left-4/5 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.7)]"></div>
+                
+                {/* Connection lines */}
+                <svg className="absolute inset-0 w-full h-full">
+                  <line x1="20%" y1="25%" x2="40%" y2="60%" stroke="rgba(168,85,247,0.3)" strokeWidth="1" />
+                  <line x1="40%" y1="60%" x2="50%" y2="40%" stroke="rgba(236,72,153,0.3)" strokeWidth="1" />
+                  <line x1="50%" y1="40%" x2="75%" y2="75%" stroke="rgba(59,130,246,0.3)" strokeWidth="1" />
+                  <line x1="75%" y1="75%" x2="80%" y2="33%" stroke="rgba(6,182,212,0.3)" strokeWidth="1" />
+                </svg>
+              </div>
+            ) : (
+              <div className="text-zinc-700 text-sm font-medium">Start Human Mode to view behavior pattern visualization</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Token Dropdown Component
+const TokenDropdown = ({ options, selected, onChange, width = "w-full" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find(opt => opt.symbol === selected) || options[0];
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={`${width} bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-left flex items-center justify-between focus:outline-none text-white shadow-[0_0_5px_rgba(168,85,247,0.25)]`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2">
+            {selectedOption.symbol.charAt(0)}
+          </div>
+          <span>{selectedOption.name} ({selectedOption.symbol})</span>
+        </div>
+        <ChevronDown size={16} className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-zinc-900 border border-purple-900/50 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="py-1">
+            {options.map((option) => (
+              <div
+                key={option.symbol}
+                className={`px-3 py-2 text-sm cursor-pointer hover:bg-purple-900/30 ${
+                  selected === option.symbol ? 'bg-purple-900/30 text-fuchsia-300' : 'text-white'
+                }`}
+                onClick={() => {
+                  onChange(option.symbol);
+                  setIsOpen(false);
+                }}
+              >
+                <div className="flex items-center">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2">
+                    {option.symbol.charAt(0)}
+                  </div>
+                  <span>{option.name} ({option.symbol})</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Market Dropdown Component
+const MarketDropdown = ({ options, selected, onChange, width = "w-full" }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={`${width} bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-left flex items-center justify-between focus:outline-none text-white shadow-[0_0_5px_rgba(168,85,247,0.25)]`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{selected}</span>
+        <ChevronDown size={16} className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 mt-1 w-full bg-zinc-900 border border-purple-900/50 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="py-1">
+            {options.map((option) => (
+              <div
+                key={option}
+                className={`px-3 py-2 text-sm cursor-pointer hover:bg-purple-900/30 ${
+                  selected === option ? 'bg-purple-900/30 text-fuchsia-300' : 'text-white'
+                }`}
+                onClick={() => {
+                  onChange && onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Status Card Component
+const StatusCard = ({ title, value, icon, color, isActive }) => {
+  let gradientColors, textColor, shadowColor;
+  
+  switch (color) {
+    case 'purple':
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      shadowColor = 'rgba(168,85,247,0.25)';
+      break;
+    case 'pink':
+      gradientColors = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      shadowColor = 'rgba(236,72,153,0.25)';
+      break;
+    case 'blue':
+      gradientColors = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      shadowColor = 'rgba(59,130,246,0.25)';
+      break;
+    case 'cyan':
+      gradientColors = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      shadowColor = 'rgba(6,182,212,0.25)';
+      break;
+    default:
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      shadowColor = 'rgba(168,85,247,0.25)';
+  }
+
+  return (
+    <div className={`bg-zinc-900/70 rounded-lg border ${isActive ? 'border-purple-900/30' : 'border-zinc-800/50'} p-4 ${isActive ? `shadow-[0_0_15px_-5px_${shadowColor}]` : ''}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className={`${isActive ? textColor : 'text-zinc-500'} text-sm`}>{title}</div>
+        <div className={`w-8 h-8 rounded-lg ${isActive ? `bg-gradient-to-r ${gradientColors}` : 'bg-zinc-800'} flex items-center justify-center ${isActive ? `shadow-[0_0_10px_rgba(168,85,247,0.3)]` : ''}`}>
+          {icon}
+        </div>
+      </div>
+      <div className={`text-xl font-bold ${isActive ? 'text-white' : 'text-zinc-600'}`}>{value}</div>
+    </div>
+  );
+};
+
+// Activity Log Item Component
+const ActivityLogItem = ({ time, action, details, status }) => {
+  let bgColor, textColor, icon;
+  
+  switch (status) {
+    case 'success':
+      bgColor = 'bg-green-900/20';
+      textColor = 'text-green-400';
+      icon = <Check size={12} />;
+      break;
+    case 'warning':
+      bgColor = 'bg-yellow-900/20';
+      textColor = 'text-yellow-400';
+      icon = <AlertTriangle size={12} />;
+      break;
+    case 'error':
+      bgColor = 'bg-red-900/20';
+      textColor = 'text-red-400';
+      icon = <X size={12} />;
+      break;
+    case 'info':
+    default:
+      bgColor = 'bg-blue-900/20';
+      textColor = 'text-blue-400';
+      icon = <Info size={12} />;
+  }
+
+  return (
+    <div className={`p-2 rounded ${bgColor} flex items-start`}>
+      <div className={`${textColor} mr-2 mt-0.5`}>
+        {icon}
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-white">{action}</div>
+          <div className="text-xs text-zinc-500">{time}</div>
+        </div>
+        <div className="text-xs text-zinc-400 mt-0.5">{details}</div>
+      </div>
+    </div>
+  );
+};
+
+// Preset Card Component
+const PresetCard = ({ name, description, values }) => {
+  return (
+    <div className="p-3 bg-zinc-900/70 rounded-md border border-zinc-800/50 hover:border-purple-900/30 transition-colors">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-medium text-white">{name}</h3>
+        <div className="flex space-x-1">
+          <button className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white">
+            <Settings size={12} />
+          </button>
+          <button className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white">
+            <Play size={12} />
+          </button>
+        </div>
+      </div>
+      <div className="text-xs text-zinc-400 mb-2">{description}</div>
+      <div className="space-y-1">
+        <div className="text-xs text-purple-300 flex justify-between">
+          <span>Delay:</span>
+          <span>{values.delay}</span>
+        </div>
+        <div className="text-xs text-purple-300 flex justify-between">
+          <span>Amount:</span>
+          <span>{values.amount}</span>
+        </div>
+        <div className="text-xs text-purple-300 flex justify-between">
+          <span>Trades:</span>
+          <span>{values.trades}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Pattern Card Component
+const PatternCard = ({ title, value, icon, details, isActive }) => {
+  return (
+    <div className={`p-4 bg-zinc-900/70 rounded-md border ${isActive ? 'border-purple-900/30' : 'border-zinc-800/50'} ${isActive ? 'shadow-[0_0_10px_rgba(168,85,247,0.15)]' : ''}`}>
+      <div className="flex items-center mb-2">
+        <div className={`w-7 h-7 rounded-full ${isActive ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30' : 'bg-zinc-800'} border ${isActive ? 'border-purple-500/50' : 'border-zinc-700'} flex items-center justify-center mr-2 ${isActive ? 'text-purple-400' : 'text-zinc-500'}`}>
+          {icon}
+        </div>
+        <div className="text-sm font-medium text-white">{title}</div>
+      </div>
+      <div className={`text-sm font-medium ${isActive ? 'text-purple-300' : 'text-zinc-600'} mb-1`}>{value}</div>
+      <div className="text-xs text-zinc-500">{details}</div>
+    </div>
+  );
+};
+
+export default HumanModeTab;

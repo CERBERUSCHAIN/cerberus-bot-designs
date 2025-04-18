@@ -1,0 +1,909 @@
+import React, { useState } from 'react';
+import { 
+  MessageSquare, Send, Play, Pause, Settings, Zap, 
+  Copy, Clock, Check, AlertTriangle, RefreshCw, ChevronDown, 
+  PlusCircle, Edit, Trash2, Save, Info, Target, Filter, Users,
+  Bell, TrendingUp, Eye, Lock, Shield, ExternalLink, ArrowUp,
+  ArrowDown, BarChart2, AlertCircle
+} from 'lucide-react';
+
+// Custom icon components
+const MessageCircle = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+  </svg>
+);
+
+const Wallet = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+    <path d="M20 12v4H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14z"></path>
+  </svg>
+);
+
+const Database = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+  </svg>
+);
+
+const CommentBotDemo = () => {
+  const [isActive, setIsActive] = useState(true);
+  const [activeTab, setActiveTab] = useState('configuration');
+  const [platform, setPlatform] = useState('reddit');
+  const [commentFrequency, setCommentFrequency] = useState('medium');
+  const [subreddit, setSubreddit] = useState('r/Deng');
+  const [commentSchedule, setCommentSchedule] = useState('random');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Sample data for comments history and templates
+  const commentHistory = [
+    { 
+      id: 1, 
+      platform: 'reddit', 
+      subreddit: 'r/Deng', 
+      comment: 'Just discovered the CBRS token - impressive tech and great community! Anyone else holding?', 
+      timestamp: '14:32:05', 
+      status: 'posted',
+      likes: 5
+    },
+    { 
+      id: 2, 
+      platform: 'reddit', 
+      subreddit: 'r/Deng', 
+      comment: 'CBRS looking bullish today. The volume is incredible! 🚀', 
+      timestamp: '13:15:22', 
+      status: 'posted',
+      likes: 12
+    },
+    { 
+      id: 3, 
+      platform: 'reddit', 
+      subreddit: 'r/Deng', 
+      comment: 'What do you guys think about the latest CBRS update? The new features look promising.', 
+      timestamp: '12:40:33', 
+      status: 'failed',
+      likes: 0
+    },
+    { 
+      id: 4, 
+      platform: 'reddit', 
+      subreddit: 'r/Deng', 
+      comment: 'Just bought more CBRS on the dip. This project has serious long-term potential.', 
+      timestamp: '11:22:15', 
+      status: 'posted',
+      likes: 8
+    },
+  ];
+  
+  const commentTemplates = [
+    { 
+      id: 1, 
+      title: 'General Positivity', 
+      content: 'Just found CBRS token and I\'m impressed with the technology. Anyone else bullish on this project?',
+      variables: ['token_name', 'sentiment']
+    },
+    { 
+      id: 2, 
+      title: 'Price Movement', 
+      content: 'CBRS looking strong today with a {price_change}% increase! Volume is picking up too.',
+      variables: ['token_name', 'price_change', 'volume']
+    },
+    { 
+      id: 3, 
+      title: 'Question About Project', 
+      content: 'What do you all think about {token_name}\'s roadmap? The {feature} looks especially promising.',
+      variables: ['token_name', 'feature']
+    },
+    { 
+      id: 4, 
+      title: 'News Response', 
+      content: 'Just saw the news about {token_name}. This {news_sentiment} development could really impact the price!',
+      variables: ['token_name', 'news', 'news_sentiment']
+    },
+  ];
+  
+  const toggleBot = () => {
+    setIsActive(!isActive);
+  };
+  
+  return (
+    <div className="flex flex-col bg-black min-h-screen text-white">
+      {/* Top bar */}
+      <div className="flex items-center justify-between p-4 bg-zinc-950 border-b border-zinc-800">
+        <div className="flex items-center">
+          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">CERBERUS</span>
+          <span className="ml-2 text-white">BOT</span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button className="p-2 bg-zinc-900 rounded-md text-zinc-400 hover:text-white">
+            <RefreshCw size={18} />
+          </button>
+        </div>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className="w-48 bg-zinc-950 border-r border-zinc-800 px-2 py-4">
+          <div className="mb-4">
+            <div className="px-3 py-1 text-xs font-semibold text-zinc-500">MAIN</div>
+            <SidebarItem icon={<MessageSquare size={16} />} text="Dashboard" />
+            <SidebarItem icon={<Zap size={16} />} text="Trading Bots" />
+            <SidebarItem icon={<BarChart2 size={16} />} text="Market Data" />
+            <SidebarItem icon={<Wallet size={16} />} text="Wallet Manager" />
+          </div>
+          
+          <div className="mb-4">
+            <div className="px-3 py-1 text-xs font-semibold text-zinc-500">TRADING</div>
+            <SidebarItem icon={<ArrowUp size={16} />} text="Quick Buys" />
+            <SidebarItem icon={<ArrowDown size={16} />} text="Quick Sells" />
+            <SidebarItem icon={<Users size={16} />} text="Human Mode" />
+            <SidebarItem icon={<Eye size={16} />} text="Token Monitor" />
+            <SidebarItem 
+              icon={<MessageCircle size={16} />} 
+              text="Comment Bot" 
+              active={true} 
+            />
+          </div>
+          
+          <div>
+            <div className="px-3 py-1 text-xs font-semibold text-zinc-500">SETTINGS</div>
+            <SidebarItem icon={<Settings size={16} />} text="Bot Settings" />
+            <SidebarItem icon={<Database size={16} />} text="Dev Wallet" />
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="flex-1 p-6 bg-black overflow-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-white">Comment Bot</h1>
+            <div className="flex space-x-2">
+              <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+                <RefreshCw size={14} className="mr-2" />
+                Refresh Status
+              </button>
+              <button 
+                className={`flex items-center px-4 py-2 rounded text-white text-sm font-medium ${
+                  isActive 
+                    ? 'bg-gradient-to-r from-red-600 to-orange-600 shadow-lg shadow-red-500/20' 
+                    : 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg shadow-green-500/20'
+                }`}
+                onClick={toggleBot}
+              >
+                {isActive ? (
+                  <>
+                    <Pause size={16} className="mr-2" />
+                    Stop Bot
+                  </>
+                ) : (
+                  <>
+                    <Play size={16} className="mr-2" />
+                    Start Bot
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          {/* Bot Status Panel */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-lg shadow-purple-500/5 overflow-hidden mb-6">
+            <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <MessageSquare className="text-purple-400 mr-2" size={18} />
+                <h2 className="text-lg font-medium text-white">
+                  Comment Bot Status
+                </h2>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center">
+                  <div className={`w-2 h-2 rounded-full mr-2 ${isActive ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                  <span className="text-sm text-zinc-300">{isActive ? 'Active' : 'Inactive'}</span>
+                </div>
+                <span className="text-sm text-zinc-500">|</span>
+                <div className="flex items-center">
+                  <Clock size={14} className="text-purple-400 mr-2" />
+                  <span className="text-sm text-zinc-300">Next Comment: {isActive ? '~15 minutes' : 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4">
+              <div className="grid grid-cols-4 gap-4">
+                <StatCard
+                  title="Platform"
+                  value="Reddit"
+                  icon={<Users size={16} />}
+                  color="purple"
+                />
+                <StatCard
+                  title="Subreddit"
+                  value={subreddit}
+                  icon={<Target size={16} />}
+                  color="pink"
+                />
+                <StatCard
+                  title="Frequency"
+                  value={commentFrequency === 'low' ? 'Low (1-2/day)' : commentFrequency === 'medium' ? 'Medium (3-5/day)' : 'High (8-10/day)'}
+                  icon={<Clock size={16} />}
+                  color="blue"
+                />
+                <StatCard
+                  title="Comments Today"
+                  value={isActive ? "3" : "0"}
+                  icon={<MessageSquare size={16} />}
+                  color="cyan"
+                />
+              </div>
+              
+              {isActive && (
+                <div className="mt-6 bg-purple-900/20 rounded-md p-3 border border-purple-900/30">
+                  <div className="flex">
+                    <Info size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                    <div>
+                      <div className="text-sm text-white">Comment Bot is actively running</div>
+                      <div className="text-xs text-purple-300 mt-1">
+                        The bot is posting comments to {subreddit} with {commentFrequency} frequency and {commentSchedule} timing. Human-like patterns are being used to avoid detection.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Navigation Tabs */}
+          <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-lg shadow-purple-500/5 overflow-hidden mb-6">
+            <div className="border-b border-purple-900/30">
+              <div className="flex">
+                <TabButton 
+                  active={activeTab === 'configuration'} 
+                  onClick={() => setActiveTab('configuration')}
+                  icon={<Settings size={16} />}
+                  text="Configuration"
+                />
+                <TabButton 
+                  active={activeTab === 'templates'} 
+                  onClick={() => setActiveTab('templates')}
+                  icon={<Edit size={16} />}
+                  text="Comment Templates"
+                />
+                <TabButton 
+                  active={activeTab === 'history'} 
+                  onClick={() => setActiveTab('history')}
+                  icon={<Clock size={16} />}
+                  text="Comment History"
+                />
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {activeTab === 'configuration' && (
+                <ConfigurationTab 
+                  platform={platform}
+                  setPlatform={setPlatform}
+                  subreddit={subreddit}
+                  setSubreddit={setSubreddit}
+                  commentFrequency={commentFrequency}
+                  setCommentFrequency={setCommentFrequency}
+                  commentSchedule={commentSchedule}
+                  setCommentSchedule={setCommentSchedule}
+                />
+              )}
+              
+              {activeTab === 'templates' && (
+                <TemplatesTab commentTemplates={commentTemplates} />
+              )}
+              
+              {activeTab === 'history' && (
+                <HistoryTab 
+                  commentHistory={commentHistory} 
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                />
+              )}
+            </div>
+          </div>
+          
+          {/* Security Features */}
+          {activeTab === 'configuration' && (
+            <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-lg shadow-purple-500/5 overflow-hidden mb-6">
+              <div className="border-b border-purple-900/30 p-4">
+                <h2 className="text-lg font-medium text-white flex items-center">
+                  <Shield className="text-purple-400 mr-2" size={18} />
+                  Bot Security Features
+                </h2>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <SecurityCard 
+                    title="Behavior Randomization"
+                    description="Random delays and typing patterns to simulate human behavior"
+                    value={85}
+                  />
+                  <SecurityCard 
+                    title="IP Protection"
+                    description="Rotating IPs and network fingerprint masking"
+                    value={70}
+                  />
+                  <SecurityCard 
+                    title="Content Uniqueness"
+                    description="AI-driven content variation to prevent pattern detection"
+                    value={90}
+                  />
+                </div>
+                
+                <div className="mt-4 p-3 bg-blue-900/20 rounded-md border border-blue-900/30">
+                  <div className="flex">
+                    <Info size={16} className="text-blue-400 mt-0.5 mr-2 flex-shrink-0" />
+                    <div className="text-xs text-blue-300">
+                      CERBERUS Comment Bot uses advanced security features to avoid detection. These technologies help maintain the appearance of organic user engagement while promoting your token across social platforms.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Performance Analytics */}
+          {activeTab === 'history' && (
+            <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-lg shadow-purple-500/5 overflow-hidden">
+              <div className="border-b border-purple-900/30 p-4 flex justify-between items-center">
+                <h2 className="text-lg font-medium text-white flex items-center">
+                  <BarChart2 className="text-purple-400 mr-2" size={18} />
+                  Comment Performance Analytics
+                </h2>
+                <div className="flex space-x-2">
+                  <button className="px-2 py-1 text-xs bg-zinc-900 rounded text-zinc-400 hover:text-white">7D</button>
+                  <button className="px-2 py-1 text-xs bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white shadow-sm shadow-purple-500/20">30D</button>
+                  <button className="px-2 py-1 text-xs bg-zinc-900 rounded text-zinc-400 hover:text-white">All</button>
+                </div>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <StatCard
+                    title="Total Comments"
+                    value="127"
+                    icon={<MessageSquare size={16} />}
+                    color="purple"
+                  />
+                  <StatCard
+                    title="Success Rate"
+                    value="94.5%"
+                    icon={<Check size={16} />}
+                    color="green"
+                  />
+                  <StatCard
+                    title="Avg. Engagement"
+                    value="8.3 upvotes"
+                    icon={<TrendingUp size={16} />}
+                    color="blue"
+                  />
+                  <StatCard
+                    title="Detection Score"
+                    value="Very Low"
+                    icon={<Eye size={16} />}
+                    color="purple"
+                    isPositive={true}
+                  />
+                </div>
+                
+                <div className="h-48 border border-zinc-800/30 rounded-lg bg-black/30 p-4 flex items-center justify-center">
+                  <div className="text-zinc-700 text-sm">Comment engagement analytics visualization here</div>
+                </div>
+                
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm text-purple-300 mb-2">Top Performing Templates</h3>
+                    <div className="space-y-2">
+                      <div className="p-2 bg-zinc-900/70 rounded border border-zinc-800/50 flex justify-between items-center">
+                        <div className="text-sm text-white">Price Movement</div>
+                        <div className="text-xs text-green-400">12.4 avg. upvotes</div>
+                      </div>
+                      <div className="p-2 bg-zinc-900/70 rounded border border-zinc-800/50 flex justify-between items-center">
+                        <div className="text-sm text-white">General Positivity</div>
+                        <div className="text-xs text-green-400">9.3 avg. upvotes</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm text-purple-300 mb-2">Best Posting Times</h3>
+                    <div className="space-y-2">
+                      <div className="p-2 bg-zinc-900/70 rounded border border-zinc-800/50 flex justify-between items-center">
+                        <div className="text-sm text-white">Weekdays 18:00-20:00</div>
+                        <div className="text-xs text-green-400">+32% engagement</div>
+                      </div>
+                      <div className="p-2 bg-zinc-900/70 rounded border border-zinc-800/50 flex justify-between items-center">
+                        <div className="text-sm text-white">Weekends 10:00-12:00</div>
+                        <div className="text-xs text-green-400">+27% engagement</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Configuration Tab Content
+const ConfigurationTab = ({ platform, setPlatform, subreddit, setSubreddit, commentFrequency, setCommentFrequency, commentSchedule, setCommentSchedule }) => {
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm text-purple-300 mb-2">
+            Platform
+          </label>
+          <div className="relative">
+            <select
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+              className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-sm shadow-purple-500/10"
+            >
+              <option value="reddit">Reddit</option>
+              <option value="twitter">Twitter (Coming Soon)</option>
+              <option value="telegram">Telegram (Coming Soon)</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <ChevronDown size={16} className="text-purple-300" />
+            </div>
+          </div>
+          <div className="text-xs text-zinc-500 mt-1">
+            Select the platform where comments will be posted
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm text-purple-300 mb-2">
+            {platform === 'reddit' ? 'Subreddit' : platform === 'twitter' ? 'Hashtags' : 'Channel'}
+          </label>
+          <input
+            type="text"
+            value={subreddit}
+            onChange={(e) => setSubreddit(e.target.value)}
+            className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-sm shadow-purple-500/10"
+          />
+          <div className="text-xs text-zinc-500 mt-1">
+            {platform === 'reddit' ? 'Target subreddit (e.g., r/Deng)' : platform === 'twitter' ? 'Target hashtags separated by commas' : 'Target Telegram channel'}
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm text-purple-300 mb-2">
+            Comment Frequency
+          </label>
+          <div className="relative">
+            <select
+              value={commentFrequency}
+              onChange={(e) => setCommentFrequency(e.target.value)}
+              className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-sm shadow-purple-500/10"
+            >
+              <option value="low">Low (1-2 comments per day)</option>
+              <option value="medium">Medium (3-5 comments per day)</option>
+              <option value="high">High (8-10 comments per day)</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <ChevronDown size={16} className="text-purple-300" />
+            </div>
+          </div>
+          <div className="text-xs text-zinc-500 mt-1">
+            How frequently the bot will post comments
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm text-purple-300 mb-2">
+            Comment Schedule
+          </label>
+          <div className="relative">
+            <select
+              value={commentSchedule}
+              onChange={(e) => setCommentSchedule(e.target.value)}
+              className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-sm shadow-purple-500/10"
+            >
+              <option value="random">Random (Unpredictable Times)</option>
+              <option value="peak">Peak Hours (When Most Users Active)</option>
+              <option value="distributed">Distributed (Spread Throughout Day)</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <ChevronDown size={16} className="text-purple-300" />
+            </div>
+          </div>
+          <div className="text-xs text-zinc-500 mt-1">
+            When comments will be posted during the day
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-zinc-800/50 pt-6">
+        <h3 className="text-sm font-medium text-purple-300 mb-4">Advanced Options</h3>
+        
+        <div className="grid grid-cols-2 gap-6">
+          <div className="flex items-center justify-between bg-zinc-900/50 p-3 rounded-lg border border-purple-900/30">
+            <div>
+              <div className="text-white text-sm">Human Pattern Simulation</div>
+              <div className="text-xs text-zinc-400 mt-1">
+                Mimic typing patterns and response times of real users
+              </div>
+            </div>
+            <ToggleSwitch defaultChecked={true} />
+          </div>
+          
+          <div className="flex items-center justify-between bg-zinc-900/50 p-3 rounded-lg border border-purple-900/30">
+            <div>
+              <div className="text-white text-sm">Variable Content</div>
+              <div className="text-xs text-zinc-400 mt-1">
+                Randomly vary comment wording to avoid detection
+              </div>
+            </div>
+            <ToggleSwitch defaultChecked={true} />
+          </div>
+          
+          <div className="flex items-center justify-between bg-zinc-900/50 p-3 rounded-lg border border-purple-900/30">
+            <div>
+              <div className="text-white text-sm">Auto-Reply</div>
+              <div className="text-xs text-zinc-400 mt-1">
+                Automatically reply to responses to bot comments
+              </div>
+            </div>
+            <ToggleSwitch defaultChecked={false} />
+          </div>
+          
+          <div className="flex items-center justify-between bg-zinc-900/50 p-3 rounded-lg border border-purple-900/30">
+            <div>
+              <div className="text-white text-sm">Comment Tracking</div>
+              <div className="text-xs text-zinc-400 mt-1">
+                Monitor upvotes/likes on bot comments
+              </div>
+            </div>
+            <ToggleSwitch defaultChecked={true} />
+          </div>
+        </div>
+        
+        <div className="mt-6">
+          <label className="block text-sm text-purple-300 mb-2">
+            Comment Sentiment
+          </label>
+          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: '80%' }}></div>
+          </div>
+          <div className="flex justify-between mt-1 text-xs text-zinc-500">
+            <span>Negative</span>
+            <span>Neutral</span>
+            <span>Positive</span>
+          </div>
+          <div className="text-xs text-zinc-400 mt-2">
+            Current setting: <span className="text-pink-300">Moderately Positive (80%)</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="border-t border-zinc-800/50 pt-6">
+        <h3 className="text-sm font-medium text-purple-300 mb-4">Account Settings</h3>
+        
+        <div className="bg-zinc-900/50 p-4 rounded-lg border border-purple-900/30 mb-4">
+          <div className="flex justify-between mb-2">
+            <div className="text-white text-sm">Reddit Account</div>
+            <div className="text-xs text-green-400 flex items-center">
+              <Check size={12} className="mr-1" />
+              Connected
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-purple-300">u/CBRS_Enthusiast93</div>
+            <button className="px-2 py-1 bg-zinc-800 rounded text-xs text-zinc-300 hover:text-white flex items-center">
+              <Lock size={10} className="mr-1" />
+              Manage
+            </button>
+          </div>
+        </div>
+        
+        <div className="flex justify-end">
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-md shadow-purple-500/10 hover:shadow-lg hover:shadow-purple-500/20 transition-shadow">
+            <Save size={16} className="mr-2" />
+            Save Configuration
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Templates Tab Content
+const TemplatesTab = ({ commentTemplates }) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-purple-300">
+          Comment templates are used to generate varied but consistent messaging
+        </div>
+        <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-sm shadow-purple-500/20">
+          <PlusCircle size={14} className="mr-2" />
+          New Template
+        </button>
+      </div>
+      
+      <div className="space-y-4">
+        {commentTemplates.map((template) => (
+          <div key={template.id} className="bg-zinc-900/50 p-4 rounded-lg border border-purple-900/30">
+            <div className="flex justify-between items-center mb-2">
+              <div className="text-white text-sm font-medium">{template.title}</div>
+              <div className="flex space-x-2">
+                <button className="p-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700">
+                  <Edit size={14} />
+                </button>
+                <button className="p-1.5 rounded bg-red-900/20 text-red-400 hover:bg-red-900/30">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+            <div className="text-sm text-zinc-300 mb-3 py-2 px-3 bg-zinc-950 rounded border border-zinc-800/50">
+              {template.content}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {template.variables.map((variable, idx) => (
+                <div key={idx} className="px-2 py-0.5 bg-purple-900/20 text-purple-300 text-xs rounded border border-purple-900/30">
+                  {`{${variable}}`}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="bg-zinc-900/30 p-4 rounded-lg border border-zinc-800/50">
+        <div className="text-sm text-white mb-3">Variable Reference</div>
+        <div className="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <div className="text-purple-300 mb-1">Token Variables:</div>
+            <div className="text-zinc-400 mb-1">{`{token_name} - Token name (e.g., "CBRS")`}</div>
+            <div className="text-zinc-400 mb-1">{`{price} - Current token price`}</div>
+            <div className="text-zinc-400 mb-1">{`{price_change} - 24h price change`}</div>
+            <div className="text-zinc-400">{`{volume} - 24h trading volume`}</div>
+          </div>
+          <div>
+            <div className="text-purple-300 mb-1">Content Variables:</div>
+            <div className="text-zinc-400 mb-1">{`{sentiment} - Positive/negative sentiment`}</div>
+            <div className="text-zinc-400 mb-1">{`{feature} - Random project feature`}</div>
+            <div className="text-zinc-400 mb-1">{`{news} - Recent news item`}</div>
+            <div className="text-zinc-400">{`{news_sentiment} - News sentiment (positive/negative)`}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex justify-end">
+        <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-md shadow-purple-500/10 hover:shadow-lg hover:shadow-purple-500/20 transition-shadow">
+          <Save size={16} className="mr-2" />
+          Save All Templates
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// History Tab Content
+const HistoryTab = ({ commentHistory, searchQuery, setSearchQuery }) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div className="flex space-x-2">
+          <button className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-sm shadow-purple-500/20">
+            All Comments
+          </button>
+          <button className="px-3 py-1.5 bg-zinc-900 text-zinc-300 text-sm rounded hover:bg-zinc-800">
+            Posted
+          </button>
+          <button className="px-3 py-1.5 bg-zinc-900 text-zinc-300 text-sm rounded hover:bg-zinc-800">
+            Failed
+          </button>
+        </div>
+        <div className="flex items-center">
+          <div className="relative w-64">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Filter size={14} className="text-zinc-500" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search comments..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-md py-1.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className="space-y-4 max-h-96 overflow-y-auto">
+        {commentHistory.map((comment) => (
+          <div key={comment.id} className="bg-zinc-900/50 p-4 rounded-lg border border-purple-900/30">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="flex items-center mb-2">
+                  <div className="text-sm text-white font-medium mr-2">{comment.subreddit}</div>
+                  <div className={`px-2 py-0.5 rounded text-xs ${
+                    comment.status === 'posted' 
+                      ? 'bg-green-900/30 text-green-400' 
+                      : 'bg-red-900/30 text-red-400'
+                  }`}>
+                    {comment.status === 'posted' ? 'Posted' : 'Failed'}
+                  </div>
+                </div>
+                <div className="text-sm text-zinc-300 mb-2">{comment.comment}</div>
+                <div className="flex items-center text-xs text-zinc-500">
+                  <Clock size={12} className="mr-1" />
+                  {comment.timestamp}
+                  {comment.status === 'posted' && (
+                    <>
+                      <span className="mx-2">•</span>
+                      <div className="flex items-center text-green-400">
+                        <TrendingUp size={12} className="mr-1" />
+                        {comment.likes} upvotes
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="flex space-x-1">
+                <button className="p-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700">
+                  <Copy size={14} />
+                </button>
+                <button className="p-1.5 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700">
+                  <Edit size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="bg-purple-900/20 rounded-md p-3 border border-purple-900/30">
+        <div className="flex">
+          <Info size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+          <div className="text-xs text-purple-300">
+            Comment history shows all posts made by the bot. Successful posts include engagement metrics to help optimize your messaging strategy. Comments are automatically varied to avoid detection as bot activity.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Sidebar Item Component
+const SidebarItem = ({ icon, text, active = false }) => {
+  return (
+    <div 
+      className={`flex items-center px-3 py-2 my-1 rounded-md cursor-pointer ${
+        active 
+          ? 'bg-gradient-to-r from-purple-900/30 to-pink-900/20 border-l-2 border-fuchsia-500 shadow-lg shadow-purple-500/10 text-white' 
+          : 'hover:bg-zinc-900 text-zinc-400 hover:text-white'
+      }`}
+    >
+      <div className={active ? 'text-fuchsia-400' : 'text-zinc-400'}>
+        {icon}
+      </div>
+      <span className="ml-3 text-sm">{text}</span>
+    </div>
+  );
+};
+
+// Tab Button Component
+const TabButton = ({ active, onClick, icon, text }) => {
+  return (
+    <button
+      className={`px-6 py-3 flex items-center ${
+        active
+          ? 'border-b-2 border-purple-500 text-white'
+          : 'text-zinc-400 hover:text-white'
+      }`}
+      onClick={onClick}
+    >
+      <div className={active ? 'text-purple-400' : 'text-zinc-500'}>
+        {icon}
+      </div>
+      <span className="ml-2">{text}</span>
+    </button>
+  );
+};
+
+// Toggle Switch Component
+const ToggleSwitch = ({ defaultChecked }) => {
+  const [isChecked, setIsChecked] = useState(defaultChecked);
+  
+  return (
+    <div 
+      className="relative inline-block w-12 align-middle select-none cursor-pointer"
+      onClick={() => setIsChecked(!isChecked)}
+    >
+      <div className="block h-6 w-12 rounded-full bg-zinc-700"></div>
+      <div 
+        className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full transition-transform duration-200 ease-in-out ${
+          isChecked 
+            ? 'transform translate-x-6 bg-gradient-to-r from-purple-500 to-pink-500 shadow-md shadow-purple-500/30' 
+            : 'bg-zinc-400'
+        }`}
+      ></div>
+    </div>
+  );
+};
+
+// Stat Card Component
+const StatCard = ({ title, value, icon, color, isPositive }) => {
+  let gradientColors, textColor;
+  
+  switch (color) {
+    case 'purple':
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      break;
+    case 'pink':
+      gradientColors = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      break;
+    case 'blue':
+      gradientColors = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      break;
+    case 'cyan':
+      gradientColors = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      break;
+    case 'green':
+      gradientColors = 'from-green-500 to-emerald-500';
+      textColor = 'text-green-300';
+      break;
+    default:
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+  }
+
+  return (
+    <div className="bg-zinc-900/70 rounded-lg border border-zinc-800/50 hover:border-purple-900/30 transition-colors p-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className={textColor}>
+          <div className="text-sm">{title}</div>
+        </div>
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradientColors} flex items-center justify-center shadow-md shadow-purple-500/10`}>
+          {React.cloneElement(icon, { size: 16 })}
+        </div>
+      </div>
+      <div className="text-lg font-bold text-white">{value}</div>
+      {isPositive !== undefined && (
+        <div className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'} mt-1`}>
+          {isPositive ? 'Good' : 'Needs improvement'}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Security Card Component
+const SecurityCard = ({ title, description, value }) => {
+  return (
+    <div className="bg-zinc-900/50 p-3 rounded-lg border border-purple-900/30">
+      <div className="flex flex-col h-full justify-between">
+        <div className="mb-3">
+          <div className="text-white text-sm font-medium mb-1">{title}</div>
+          <div className="text-xs text-zinc-400">
+            {description}
+          </div>
+        </div>
+        <div className="flex items-center">
+          <div className="h-1.5 flex-grow bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: `${value}%` }}></div>
+          </div>
+          <span className="text-xs text-purple-300 ml-2">{value}%</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CommentBotDemo;

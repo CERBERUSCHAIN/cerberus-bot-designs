@@ -1,0 +1,1094 @@
+import React, { useState } from 'react';
+import { 
+  Rocket, Settings, ChevronDown, Wallet, BarChart2, Zap, Activity, 
+  LineChart, Eye, RefreshCw, Database, PlusCircle, Trash2, Copy, 
+  ArrowUpDown, Play, Shield, Users, Clock, Check, X, Info, AlertCircle
+} from 'lucide-react';
+
+const CerberusDashboard = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeBotTab, setActiveBotTab] = useState('volume');
+  
+  return (
+    <div className="flex h-screen bg-black text-white overflow-hidden">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-zinc-950 border-r border-purple-900/30 flex flex-col">
+        {/* Logo */}
+        <div className="p-5 flex items-center border-b border-purple-900/30">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 text-transparent bg-clip-text drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">
+            CERBERUS
+          </div>
+          <div className="ml-2 text-white font-semibold">
+            BOT
+          </div>
+        </div>
+        
+        {/* Navigation */}
+        <div className="flex-1 overflow-auto">
+          <NavSection title="MAIN">
+            <NavItem 
+              icon={<BarChart2 size={18} />} 
+              text="Dashboard" 
+              active={activeTab === 'dashboard'} 
+              onClick={() => setActiveTab('dashboard')}
+            />
+            <NavItem 
+              icon={<Zap size={18} />} 
+              text="Trading Bots" 
+              active={activeTab === 'bots'} 
+              onClick={() => setActiveTab('bots')}
+            />
+            <NavItem 
+              icon={<Activity size={18} />} 
+              text="Market Data" 
+              active={activeTab === 'market'} 
+              onClick={() => setActiveTab('market')}
+            />
+            <NavItem 
+              icon={<Wallet size={18} />} 
+              text="Wallet Manager" 
+              active={activeTab === 'wallet-manager'} 
+              onClick={() => setActiveTab('wallet-manager')}
+            />
+          </NavSection>
+          
+          <NavSection title="TRADING">
+            <NavItem 
+              icon={<ArrowUpDown size={18} />} 
+              text="Quick Buys" 
+              active={activeTab === 'quick-buys'} 
+              onClick={() => setActiveTab('quick-buys')}
+            />
+            <NavItem 
+              icon={<ArrowUpDown size={18} transform="rotate(90)" />} 
+              text="Quick Sells" 
+              active={activeTab === 'quick-sells'} 
+              onClick={() => setActiveTab('quick-sells')}
+            />
+            <NavItem 
+              icon={<Users size={18} />} 
+              text="Human Mode" 
+              active={activeTab === 'human-mode'} 
+              onClick={() => setActiveTab('human-mode')}
+            />
+            <NavItem 
+              icon={<Eye size={18} />} 
+              text="Token Monitor" 
+              active={activeTab === 'monitor'} 
+              onClick={() => setActiveTab('monitor')}
+            />
+          </NavSection>
+          
+          <NavSection title="SETTINGS">
+            <NavItem 
+              icon={<Settings size={18} />} 
+              text="Bot Settings" 
+              active={activeTab === 'settings'} 
+              onClick={() => setActiveTab('settings')}
+            />
+            <NavItem 
+              icon={<Database size={18} />} 
+              text="Dev Wallet" 
+              active={activeTab === 'dev-wallet'} 
+              onClick={() => setActiveTab('dev-wallet')}
+            />
+          </NavSection>
+        </div>
+        
+        {/* User Info */}
+        <div className="border-t border-purple-900/30 p-4 flex items-center">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            C
+          </div>
+          <div className="ml-3">
+            <div className="text-sm font-medium">CERBERUS</div>
+            <div className="text-xs text-purple-400">Alpha v0.1</div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {activeTab === 'bots' && <BotsTabs active={activeBotTab} setActive={setActiveBotTab} />}
+        
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto p-5 bg-black">
+          {activeTab === 'dashboard' && <DashboardContent />}
+          {activeTab === 'bots' && <BotsContent activeBot={activeBotTab} />}
+          {activeTab === 'wallet-manager' && <WalletManagerContent />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Bot Tabs Component
+const BotsTabs = ({ active, setActive }) => {
+  return (
+    <div className="bg-zinc-950 border-b border-purple-900/30 px-4 flex items-center h-12">
+      <BotTab 
+        icon={<Activity size={16} />} 
+        text="Volume Bot" 
+        active={active === 'volume'} 
+        onClick={() => setActive('volume')}
+      />
+      <BotTab 
+        icon={<Zap size={16} />} 
+        text="Bundle Bot" 
+        active={active === 'bundle'} 
+        onClick={() => setActive('bundle')}
+      />
+      <BotTab 
+        icon={<Eye size={16} />} 
+        text="Sniper Bot" 
+        active={active === 'sniper'} 
+        onClick={() => setActive('sniper')}
+      />
+      <BotTab 
+        icon={<ArrowUpDown size={16} />} 
+        text="Bump Bot" 
+        active={active === 'bump'} 
+        onClick={() => setActive('bump')}
+      />
+    </div>
+  );
+};
+
+// Bot Tab Component
+const BotTab = ({ icon, text, active, onClick }) => {
+  return (
+    <div 
+      className={`flex items-center px-4 py-2 mr-2 rounded-t cursor-pointer transition-colors ${
+        active 
+          ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50 text-fuchsia-300 shadow-[0_5px_15px_-5px_rgba(217,70,239,0.5)]' 
+          : 'text-purple-300 hover:text-white hover:bg-purple-900/20'
+      }`}
+      onClick={onClick}
+    >
+      <div className="mr-2">{icon}</div>
+      <div className="text-sm font-medium">{text}</div>
+    </div>
+  );
+};
+
+// Navigation Section Component
+const NavSection = ({ title, children }) => {
+  return (
+    <div className="my-2">
+      <div className="px-4 py-2 text-xs text-purple-400 font-semibold">{title}</div>
+      {children}
+    </div>
+  );
+};
+
+// Navigation Item Component
+const NavItem = ({ icon, text, active = false, onClick }) => {
+  return (
+    <div 
+      className={`flex items-center px-4 py-3 cursor-pointer transition-all ${
+        active 
+          ? 'bg-gradient-to-r from-purple-900/30 to-pink-900/20 border-l-2 border-fuchsia-500 shadow-[0_0_20px_-5px_rgba(217,70,239,0.5)]' 
+          : 'hover:bg-zinc-900 border-l-2 border-transparent'
+      }`}
+      onClick={onClick}
+    >
+      <div className={`${active ? 'text-fuchsia-400' : 'text-zinc-400'} mr-3`}>{icon}</div>
+      <div className={`${active ? 'text-white' : 'text-zinc-400'}`}>{text}</div>
+    </div>
+  );
+};
+
+// Dashboard Content Component
+const DashboardContent = () => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <RefreshCw size={14} className="mr-2" />
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-4 gap-4">
+        <StatsCard title="Active Bots" value="2/4" icon={<Zap size={20} />} trend="+1" color="purple" />
+        <StatsCard title="Wallets" value="16" icon={<Wallet size={20} />} trend="+3" color="pink" />
+        <StatsCard title="24h Volume" value="$125,367" icon={<BarChart2 size={20} />} trend="+12.5%" color="blue" />
+        <StatsCard title="Profit/Loss" value="+$1,248" icon={<Activity size={20} />} trend="+5.2%" color="cyan" />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6">
+        {/* Bot Status Cards */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Active Bots</h2>
+          </div>
+          <div className="p-4 space-y-4">
+            <BotStatusCard
+              name="Volume Bot"
+              description="Detects and trades on volume spikes"
+              status="Active"
+              isActive={true}
+              lastAction="CBRS/SOL (14:32)"
+              color="purple"
+            />
+            <BotStatusCard
+              name="Bundle Bot"
+              description="Executes arbitrage between DEXs"
+              status="Active"
+              isActive={true}
+              lastAction="CBRS/SOL (0.79% gain)"
+              color="pink"
+            />
+            <BotStatusCard
+              name="Sniper Bot"
+              description="Detects new tokens with potential"
+              status="Inactive"
+              isActive={false}
+              lastAction="None"
+              color="blue"
+            />
+            <BotStatusCard
+              name="Bump Bot"
+              description="Optimizes transaction execution"
+              status="Inactive"
+              isActive={false}
+              lastAction="None"
+              color="cyan"
+            />
+          </div>
+        </div>
+        
+        {/* Recent Transactions */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Recent Transactions</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-2">
+              <TransactionRow
+                token="CBRS/SOL"
+                type="BUY"
+                amount="1000 CBRS"
+                price="0.00125 SOL"
+                time="14:32:05"
+                status="Completed"
+              />
+              <TransactionRow
+                token="SOL/USDC"
+                type="BUY"
+                amount="2.45 SOL"
+                price="$152.34"
+                time="13:45:21"
+                status="Completed"
+              />
+              <TransactionRow
+                token="CBRS/SOL"
+                type="SELL"
+                amount="500 CBRS"
+                price="0.00128 SOL"
+                time="12:30:15"
+                status="Completed"
+              />
+              <TransactionRow
+                token="CBRS/USDC"
+                type="BUY"
+                amount="200 CBRS"
+                price="$0.25"
+                time="11:22:30"
+                status="Pending"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Token Monitor */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Token Monitor</h2>
+          <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            <PlusCircle size={14} className="mr-2" />
+            Add Token
+          </button>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-6 text-sm text-purple-300 pb-2 border-b border-zinc-800">
+            <div>Token</div>
+            <div>Price</div>
+            <div>24h Change</div>
+            <div>Market Cap</div>
+            <div>Volume</div>
+            <div></div>
+          </div>
+          <div className="divide-y divide-zinc-800/50">
+            <TokenRow
+              name="CERBERUS"
+              symbol="CBRS"
+              price="$0.000125"
+              change={"+5.2%"}
+              marketCap="$1.25M"
+              volume="$125,367"
+            />
+            <TokenRow
+              name="Solana"
+              symbol="SOL"
+              price="$152.34"
+              change={"+2.3%"}
+              marketCap="$65.2B"
+              volume="$2.1B"
+            />
+            <TokenRow
+              name="Jupiter"
+              symbol="JUP"
+              price="$7.89"
+              change={"-1.4%"}
+              marketCap="$1.1B"
+              volume="$87.5M"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Bots Content Component
+const BotsContent = ({ activeBot }) => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">
+          {activeBot === 'volume' && 'Volume Bot'}
+          {activeBot === 'bundle' && 'Bundle Bot'}
+          {activeBot === 'sniper' && 'Sniper Bot'}
+          {activeBot === 'bump' && 'Bump Bot'}
+        </h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded text-white text-sm shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+            <Play size={16} className="mr-2" />
+            Start Bot
+          </button>
+        </div>
+      </div>
+      
+      {activeBot === 'volume' && (
+        <VolumeBotContent />
+      )}
+      
+      {activeBot === 'bundle' && (
+        <BundleBotContent />
+      )}
+      
+      {activeBot === 'sniper' && (
+        <SniperBotContent />
+      )}
+      
+      {activeBot === 'bump' && (
+        <BumpBotContent />
+      )}
+    </div>
+  );
+};
+
+// Volume Bot Content Component
+const VolumeBotContent = () => {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <BotSettingsCard
+          title="Threshold"
+          value="50%"
+          description="Volume increase detection threshold"
+          icon={<Activity />}
+          color="purple"
+        />
+        <BotSettingsCard
+          title="Timeframe"
+          value="30 min"
+          description="Volume analysis timeframe"
+          icon={<Clock />}
+          color="pink"
+        />
+        <BotSettingsCard
+          title="Trade Size"
+          value="0.5 SOL"
+          description="Maximum trade amount per transaction"
+          icon={<Wallet />}
+          color="blue"
+        />
+        <BotSettingsCard
+          title="Protection"
+          value="Enabled"
+          description="Anti-rug pull protection active"
+          icon={<Shield />}
+          color="cyan"
+        />
+      </div>
+      
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Volume Chart</h2>
+          </div>
+          <div className="p-4 h-64 flex items-center justify-center">
+            <div className="text-zinc-500 text-sm">Volume chart visualization here</div>
+          </div>
+        </div>
+        
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Bot Activity</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-4">
+              <ActivityLogItem
+                time="14:32:05"
+                message="Volume spike detected on CBRS/SOL"
+                type="info"
+              />
+              <ActivityLogItem
+                time="14:32:08"
+                message="Executing BUY order: 1000 CBRS"
+                type="success"
+              />
+              <ActivityLogItem
+                time="14:15:30"
+                message="Monitoring volume patterns..."
+                type="normal"
+              />
+              <ActivityLogItem
+                time="13:45:12"
+                message="Potential rug pull detected. Order cancelled."
+                type="warning"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Volume Bot Settings</h2>
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <Settings size={14} className="mr-2" />
+            Edit Settings
+          </button>
+        </div>
+        <div className="p-4 grid grid-cols-2 gap-6">
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Volume Threshold (%)
+              </label>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                defaultValue="50"
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                <span>10%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Time Window (minutes)
+              </label>
+              <input
+                type="range"
+                min="5"
+                max="60"
+                defaultValue="30"
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                <span>5 min</span>
+                <span>30 min</span>
+                <span>60 min</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Maximum Trade Size (SOL)
+              </label>
+              <input
+                type="text"
+                defaultValue="0.5"
+                className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="flex items-center space-x-2 text-sm text-purple-300">
+                <input type="checkbox" defaultChecked className="rounded text-purple-500" />
+                <span>Enable rug pull protection</span>
+              </label>
+            </div>
+            
+            <div className="mb-4">
+              <label className="flex items-center space-x-2 text-sm text-purple-300">
+                <input type="checkbox" defaultChecked className="rounded text-purple-500" />
+                <span>Auto-sell on profit target (15%)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// Bundle Bot Content Component (placeholder)
+const BundleBotContent = () => {
+  return (
+    <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] p-8 text-center">
+      <h3 className="text-xl font-medium text-white mb-4">Bundle Bot Configuration</h3>
+      <p className="text-purple-300 mb-6">Configure your Bundle Bot to execute arbitrage between DEXs</p>
+      <div className="flex justify-center">
+        <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+          Configure Bundle Bot
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Sniper Bot Content Component (placeholder)
+const SniperBotContent = () => {
+  return (
+    <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] p-8 text-center">
+      <h3 className="text-xl font-medium text-white mb-4">Sniper Bot Configuration</h3>
+      <p className="text-purple-300 mb-6">Configure your Sniper Bot to detect and trade new tokens</p>
+      <div className="flex justify-center">
+        <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+          Configure Sniper Bot
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Bump Bot Content Component (placeholder)
+const BumpBotContent = () => {
+  return (
+    <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] p-8 text-center">
+      <h3 className="text-xl font-medium text-white mb-4">Bump Bot Configuration</h3>
+      <p className="text-purple-300 mb-6">Configure your Bump Bot to optimize transaction execution</p>
+      <div className="flex justify-center">
+        <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+          Configure Bump Bot
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Wallet Manager Content Component
+const WalletManagerContent = () => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Wallet Manager</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <Trash2 size={14} className="mr-2" />
+            Dump All
+          </button>
+          <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            <PlusCircle size={14} className="mr-2" />
+            Generate Wallets
+          </button>
+        </div>
+      </div>
+      
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center">
+          <div className="flex space-x-2">
+            <button className="px-3 py-1.5 bg-zinc-900 text-zinc-300 text-sm rounded hover:bg-zinc-800">
+              Quick Buys
+            </button>
+            <button className="px-3 py-1.5 bg-zinc-900 text-zinc-300 text-sm rounded hover:bg-zinc-800">
+              Bundled Wallets
+            </button>
+            <button className="px-3 py-1.5 bg-zinc-900 text-zinc-300 text-sm rounded hover:bg-zinc-800">
+              Human Mode
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-4">
+          <div className="grid grid-cols-12 text-sm text-purple-300 pb-2 border-b border-zinc-800">
+            <div className="col-span-4">Wallet Address</div>
+            <div className="col-span-3">Private Key</div>
+            <div className="col-span-1">Balance</div>
+            <div className="col-span-3">Sell on Pump.fun</div>
+            <div className="col-span-1">Actions</div>
+          </div>
+          <div className="divide-y divide-zinc-800/50">
+            <WalletRow
+              address="2Sybt...yMyGg"
+              privateKey="WLhs9...AeW3E"
+              balance="0.0063"
+            />
+            <WalletRow
+              address="5xReE...os24k"
+              privateKey="oNYhG...pxdwS"
+              balance="0.0060"
+            />
+            <WalletRow
+              address="232wM...ZfDrf"
+              privateKey="yK54w...wAjBm"
+              balance="0.0057"
+            />
+            <WalletRow
+              address="3WWx8...2NY2A"
+              privateKey="2Ys4Q...crKwU"
+              balance="0.0059"
+            />
+            <WalletRow
+              address="6dwZi...Wf7e7"
+              privateKey="2K6qx...bEnU7"
+              balance="0.0063"
+              isDevWallet={true}
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Dev Wallet</h2>
+          </div>
+          <div className="p-4">
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Dev Wallet Address
+              </label>
+              <div className="flex">
+                <input
+                  type="text"
+                  value="6dwZi...Wf7e7"
+                  readOnly
+                  className="flex-1 bg-zinc-900 border border-purple-900/50 rounded-l px-3 py-2 text-white focus:outline-none shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                />
+                <button className="bg-zinc-800 px-3 rounded-r border border-purple-900/50 border-l-0">
+                  <Copy size={14} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <button className="px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+                Sell All Tokens
+              </button>
+              <button className="px-3 py-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+                Refund SOL
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Bubble Map</h2>
+          </div>
+          <div className="p-4 h-40 flex items-center justify-center">
+            <div className="text-zinc-500 text-sm">Bubble map visualization here</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Token Monitor</h2>
+          <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            <PlusCircle size={14} className="mr-2" />
+            Add Token
+          </button>
+        </div>
+        <div className="p-4">
+          <div className="mb-4">
+            <label className="block text-sm text-purple-300 mb-1.5">
+              Add Token Address to Monitor
+            </label>
+            <div className="flex">
+              <input
+                type="text"
+                placeholder="Enter token address"
+                className="flex-1 bg-zinc-900 border border-purple-900/50 rounded-l px-3 py-2 text-white focus:outline-none shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+              />
+              <button className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 rounded-r text-white shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+                Add
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-6 text-sm text-purple-300 pb-2 border-b border-zinc-800">
+            <div className="col-span-3">Token</div>
+            <div>Address</div>
+            <div>Price</div>
+            <div>Actions</div>
+          </div>
+          <div className="divide-y divide-zinc-800/50">
+            <MonitorTokenRow
+              name="CERBERUS"
+              symbol="CBRS"
+              address="6dwZi...Wf7e7"
+              price="$0.000125"
+            />
+            <MonitorTokenRow
+              name="Jupiter"
+              symbol="JUP" 
+              address="8x4R2...HY5z"
+              price="$7.89"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Stats Card Component
+const StatsCard = ({ title, value, icon, trend, color }) => {
+  let gradient, textColor, borderColor, shadowColor;
+  
+  switch (color) {
+    case 'purple':
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+      break;
+    case 'pink':
+      gradient = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      borderColor = 'border-pink-900/30';
+      shadowColor = 'rgba(236,72,153,0.25)';
+      break;
+    case 'blue':
+      gradient = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      borderColor = 'border-blue-900/30';
+      shadowColor = 'rgba(59,130,246,0.25)';
+      break;
+    case 'cyan':
+      gradient = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      borderColor = 'border-cyan-900/30';
+      shadowColor = 'rgba(6,182,212,0.25)';
+      break;
+    default:
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+  }
+
+  return (
+    <div className={`bg-zinc-950 rounded-lg border ${borderColor} shadow-[0_0_20px_-5px_${shadowColor}] p-4`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className={`${textColor} text-sm`}>{title}</div>
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradient} flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.5)]`}>
+          {icon}
+        </div>
+      </div>
+      <div className="text-xl font-bold text-white">{value}</div>
+      {trend && (
+        <div className={`text-xs ${trend.startsWith('+') ? 'text-green-400' : 'text-red-400'} mt-1`}>
+          {trend} {trend.includes('%') ? '' : 'today'}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Bot Status Card Component
+const BotStatusCard = ({ name, description, status, isActive, lastAction, color }) => {
+  let gradient, textColor;
+  
+  switch (color) {
+    case 'purple':
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      break;
+    case 'pink':
+      gradient = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      break;
+    case 'blue':
+      gradient = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      break;
+    case 'cyan':
+      gradient = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      break;
+    default:
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+  }
+
+  return (
+    <div className="flex items-center bg-zinc-900 rounded-lg p-3">
+      <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center mr-4 shadow-[0_0_10px_rgba(168,85,247,0.5)]`}>
+        {color === 'purple' && <Activity size={18} />}
+        {color === 'pink' && <Zap size={18} />}
+        {color === 'blue' && <Eye size={18} />}
+        {color === 'cyan' && <ArrowUpDown size={18} />}
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="font-medium text-white">{name}</div>
+          <div className={`text-xs px-2 py-0.5 rounded ${isActive ? 'bg-green-900/30 text-green-400' : 'bg-zinc-800 text-zinc-400'}`}>
+            {status}
+          </div>
+        </div>
+        <div className="text-xs text-zinc-400 mt-0.5">{description}</div>
+        {lastAction !== 'None' && (
+          <div className={`text-xs ${textColor} mt-1`}>Last Action: {lastAction}</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Transaction Row Component
+const TransactionRow = ({ token, type, amount, price, time, status }) => {
+  return (
+    <div className="grid grid-cols-5 py-2 px-3 rounded bg-zinc-900 text-sm">
+      <div className="text-white">{token}</div>
+      <div className={type === 'BUY' ? 'text-green-400' : 'text-red-400'}>
+        {type}
+      </div>
+      <div className="text-zinc-300">{amount}</div>
+      <div className="text-zinc-300">{price}</div>
+      <div className="flex items-center justify-between">
+        <div className="text-zinc-400">{time}</div>
+        <div className={`text-xs px-2 py-0.5 rounded ${
+          status === 'Completed' ? 'bg-green-900/30 text-green-400' : 'bg-yellow-900/30 text-yellow-400'
+        }`}>
+          {status}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Token Row Component
+const TokenRow = ({ name, symbol, price, change, marketCap, volume }) => {
+  const isPositive = change.startsWith('+');
+  
+  return (
+    <div className="grid grid-cols-6 py-3 text-sm">
+      <div className="flex items-center">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+          {symbol.charAt(0)}
+        </div>
+        <div>
+          <div className="text-white">{name}</div>
+          <div className="text-xs text-zinc-400">{symbol}</div>
+        </div>
+      </div>
+      <div className="text-white">{price}</div>
+      <div className={isPositive ? 'text-green-400' : 'text-red-400'}>
+        {change}
+      </div>
+      <div className="text-zinc-300">{marketCap}</div>
+      <div className="text-zinc-300">{volume}</div>
+      <div className="flex justify-end space-x-1">
+        <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+          <LineChart size={14} />
+        </button>
+        <button className="p-1.5 rounded bg-green-900/30 text-green-400 hover:bg-green-900/50">
+          <ArrowUpDown size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Wallet Row Component
+const WalletRow = ({ address, privateKey, balance, isDevWallet = false }) => {
+  return (
+    <div className={`grid grid-cols-12 py-3 text-sm ${isDevWallet ? 'bg-gradient-to-r from-purple-900/20 to-pink-900/10' : ''}`}>
+      <div className="col-span-4 flex items-center">
+        {isDevWallet && (
+          <div className="bg-zinc-900 rounded px-2 py-0.5 text-xs text-cyan-400 mr-2 border border-cyan-900/50 shadow-[0_0_5px_rgba(34,211,238,0.3)]">
+            Dev
+          </div>
+        )}
+        <div className="flex items-center">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-2 shadow-[0_0_5px_rgba(168,85,247,0.5)]">
+            <Wallet size={12} />
+          </div>
+          <span className="text-white">{address}</span>
+        </div>
+      </div>
+      <div className="col-span-3 flex items-center">
+        <span className="text-zinc-400">{privateKey}</span>
+        <button className="ml-2 p-1 rounded hover:bg-zinc-800">
+          <Copy size={12} className="text-zinc-500" />
+        </button>
+      </div>
+      <div className="col-span-1 text-blue-300">{balance}</div>
+      <div className="col-span-3 flex space-x-1">
+        <button className="px-2 py-1 rounded text-xs bg-zinc-900 text-white hover:bg-zinc-800">
+          30%
+        </button>
+        <button className="px-2 py-1 rounded text-xs bg-zinc-900 text-white hover:bg-zinc-800">
+          50%
+        </button>
+        <button className="px-2 py-1 rounded text-xs bg-zinc-900 text-white hover:bg-zinc-800">
+          75%
+        </button>
+        <button className="px-2 py-1 rounded text-xs bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-[0_0_5px_rgba(59,130,246,0.5)]">
+          100%
+        </button>
+      </div>
+      <div className="col-span-1 flex justify-end">
+        <button className="p-1.5 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30">
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Monitor Token Row Component
+const MonitorTokenRow = ({ name, symbol, address, price }) => {
+  return (
+    <div className="grid grid-cols-6 py-3 text-sm">
+      <div className="col-span-3 flex items-center">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+          {symbol.charAt(0)}
+        </div>
+        <div>
+          <div className="text-white">{name}</div>
+          <div className="text-xs text-zinc-400">{symbol}</div>
+        </div>
+      </div>
+      <div className="text-zinc-400">{address}</div>
+      <div className="text-white">{price}</div>
+      <div className="flex justify-end space-x-1">
+        <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+          <LineChart size={14} />
+        </button>
+        <button className="p-1.5 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30">
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Bot Settings Card Component
+const BotSettingsCard = ({ title, value, description, icon, color }) => {
+  let gradient, textColor, borderColor, shadowColor;
+  
+  switch (color) {
+    case 'purple':
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+      break;
+    case 'pink':
+      gradient = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      borderColor = 'border-pink-900/30';
+      shadowColor = 'rgba(236,72,153,0.25)';
+      break;
+    case 'blue':
+      gradient = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      borderColor = 'border-blue-900/30';
+      shadowColor = 'rgba(59,130,246,0.25)';
+      break;
+    case 'cyan':
+      gradient = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      borderColor = 'border-cyan-900/30';
+      shadowColor = 'rgba(6,182,212,0.25)';
+      break;
+    default:
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+  }
+
+  return (
+    <div className={`bg-zinc-950 rounded-lg border ${borderColor} shadow-[0_0_15px_-5px_${shadowColor}] p-4`}>
+      <div className="flex items-center mb-2">
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradient} flex items-center justify-center mr-3 shadow-[0_0_10px_rgba(168,85,247,0.3)]`}>
+          {React.cloneElement(icon, { size: 16 })}
+        </div>
+        <div className="text-sm font-medium text-white">{title}</div>
+      </div>
+      <div className="text-xl font-bold text-white mb-1">{value}</div>
+      <div className={`text-xs ${textColor}`}>{description}</div>
+    </div>
+  );
+};
+
+// Activity Log Item Component
+const ActivityLogItem = ({ time, message, type }) => {
+  let bgColor, textColor, iconColor;
+  
+  switch (type) {
+    case 'info':
+      bgColor = 'bg-blue-900/20';
+      textColor = 'text-blue-300';
+      iconColor = 'text-blue-400';
+      break;
+    case 'success':
+      bgColor = 'bg-green-900/20';
+      textColor = 'text-green-300';
+      iconColor = 'text-green-400';
+      break;
+    case 'warning':
+      bgColor = 'bg-yellow-900/20';
+      textColor = 'text-yellow-300';
+      iconColor = 'text-yellow-400';
+      break;
+    case 'error':
+      bgColor = 'bg-red-900/20';
+      textColor = 'text-red-300';
+      iconColor = 'text-red-400';
+      break;
+    default:
+      bgColor = 'bg-zinc-900';
+      textColor = 'text-zinc-300';
+      iconColor = 'text-zinc-400';
+  }
+
+  return (
+    <div className={`flex items-start rounded p-2 ${bgColor}`}>
+      <div className="mr-3 mt-0.5">
+        {type === 'info' && <Info size={14} className={iconColor} />}
+        {type === 'success' && <Check size={14} className={iconColor} />}
+        {type === 'warning' && <AlertCircle size={14} className={iconColor} />}
+        {type === 'error' && <X size={14} className={iconColor} />}
+        {type === 'normal' && <Clock size={14} className={iconColor} />}
+      </div>
+      <div className="flex-1">
+        <div className={`text-xs ${textColor}`}>{message}</div>
+        <div className="text-xs text-zinc-500 mt-0.5">{time}</div>
+      </div>
+    </div>
+  );
+};
+
+export default CerberusDashboard;

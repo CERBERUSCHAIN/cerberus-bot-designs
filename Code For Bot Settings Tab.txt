@@ -1,0 +1,988 @@
+import React, { useState } from 'react';
+import { 
+  Settings, RefreshCw, Save, ChevronDown, 
+  Sliders, Shield, Globe, Key, Database, 
+  Terminal, Clock, AlertTriangle, Check, 
+  Info, Radio, Server, Cpu, Wallet, 
+  Eye, Zap, Network, Lock
+} from 'lucide-react';
+
+const BotSettingsTab = () => {
+  const [activeSection, setActiveSection] = useState('general');
+  const [apiKey, setApiKey] = useState('****************************************');
+  const [maxTradeSize, setMaxTradeSize] = useState('0.5');
+  const [riskLevel, setRiskLevel] = useState('medium');
+  const [showApiKey, setShowApiKey] = useState(false);
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Bot Settings</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+            <Save size={16} className="mr-2" />
+            Save All Settings
+          </button>
+        </div>
+      </div>
+      
+      {/* Settings Navigation */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="flex border-b border-purple-900/30">
+          <SettingsTab 
+            icon={<Settings size={16} />}
+            text="General"
+            active={activeSection === 'general'}
+            onClick={() => setActiveSection('general')}
+          />
+          <SettingsTab 
+            icon={<Shield size={16} />}
+            text="Security"
+            active={activeSection === 'security'}
+            onClick={() => setActiveSection('security')}
+          />
+          <SettingsTab 
+            icon={<Zap size={16} />}
+            text="Trading Bots"
+            active={activeSection === 'bots'}
+            onClick={() => setActiveSection('bots')}
+          />
+          <SettingsTab 
+            icon={<Network size={16} />}
+            text="Network"
+            active={activeSection === 'network'}
+            onClick={() => setActiveSection('network')}
+          />
+          <SettingsTab 
+            icon={<Database size={16} />}
+            text="Advanced"
+            active={activeSection === 'advanced'}
+            onClick={() => setActiveSection('advanced')}
+          />
+        </div>
+        
+        {/* Settings Content */}
+        <div className="p-6">
+          {/* General Settings */}
+          {activeSection === 'general' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                {/* API Key */}
+                <div>
+                  <label className="block text-sm text-purple-300 mb-2 flex items-center">
+                    <Key size={14} className="mr-2" />
+                    API Key
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showApiKey ? "text" : "password"}
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <button 
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white"
+                      onClick={() => setShowApiKey(!showApiKey)}
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-1">
+                    Your API key is encrypted and stored securely
+                  </div>
+                </div>
+                
+                {/* Max Trade Size */}
+                <div>
+                  <label className="block text-sm text-purple-300 mb-2 flex items-center">
+                    <Wallet size={14} className="mr-2" />
+                    Max Trade Size (SOL)
+                  </label>
+                  <input
+                    type="text"
+                    value={maxTradeSize}
+                    onChange={(e) => setMaxTradeSize(e.target.value)}
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="text-xs text-zinc-500 mt-1">
+                    Maximum amount of SOL per transaction
+                  </div>
+                </div>
+                
+                {/* Risk Level */}
+                <div>
+                  <label className="block text-sm text-purple-300 mb-2 flex items-center">
+                    <Sliders size={14} className="mr-2" />
+                    Risk Level
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={riskLevel}
+                      onChange={(e) => setRiskLevel(e.target.value)}
+                      className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    >
+                      <option value="low">Low Risk</option>
+                      <option value="medium">Medium Risk</option>
+                      <option value="high">High Risk</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <ChevronDown size={16} className="text-purple-300" />
+                    </div>
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-1">
+                    Affects trading strategies and automation
+                  </div>
+                </div>
+                
+                {/* Discord Integration */}
+                <div>
+                  <label className="block text-sm text-purple-300 mb-2 flex items-center">
+                    <Globe size={14} className="mr-2" />
+                    Discord Webhook URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://discord.com/api/webhooks/..."
+                    className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                  />
+                  <div className="text-xs text-zinc-500 mt-1">
+                    For trade notifications and alerts
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                  <Terminal size={14} className="mr-2" />
+                  User Interface Settings
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <ToggleSetting
+                    title="Dark Mode"
+                    description="Use dark color scheme"
+                    defaultChecked={true}
+                  />
+                  <ToggleSetting
+                    title="Live Price Updates"
+                    description="Real-time price data"
+                    defaultChecked={true}
+                  />
+                  <ToggleSetting
+                    title="Sound Notifications"
+                    description="Play sounds on events"
+                    defaultChecked={false}
+                  />
+                  <ToggleSetting
+                    title="Desktop Notifications"
+                    description="System notifications"
+                    defaultChecked={true}
+                  />
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                  <Clock size={14} className="mr-2" />
+                  Session Settings
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Auto-Logout Timeout (minutes)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="30"
+                      min="5"
+                      max="120"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Data Refresh Rate (seconds)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="5"
+                      min="1"
+                      max="60"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 bg-purple-900/20 rounded-md p-3 border border-purple-900/30">
+                <div className="flex">
+                  <Info size={16} className="text-purple-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div className="text-xs text-purple-300">
+                    These settings affect all trading bots and the overall application behavior. Adjust the risk level based on your trading strategy. Higher risk settings may result in larger potential gains but also increased exposure to market volatility.
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <Save size={16} className="mr-2" />
+                  Save General Settings
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Security Settings */}
+          {activeSection === 'security' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Lock size={14} className="mr-2" />
+                    Security Settings
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <ToggleSetting
+                      title="Two-Factor Authentication"
+                      description="Require 2FA for login"
+                      defaultChecked={true}
+                    />
+                    <ToggleSetting
+                      title="IP Restrictions"
+                      description="Limit access to specific IPs"
+                      defaultChecked={false}
+                    />
+                    <ToggleSetting
+                      title="API Key Rotation"
+                      description="Auto-rotate keys every 30 days"
+                      defaultChecked={false}
+                    />
+                    <ToggleSetting
+                      title="Transaction Signing"
+                      description="Require signature for all trades"
+                      defaultChecked={true}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Shield size={14} className="mr-2" />
+                    Privacy & Protection
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <ToggleSetting
+                      title="Anti-MEV Protection"
+                      description="Prevent front-running attacks"
+                      defaultChecked={true}
+                    />
+                    <ToggleSetting
+                      title="Privacy Mode"
+                      description="Hide balances and transactions"
+                      defaultChecked={false}
+                    />
+                    <ToggleSetting
+                      title="Transaction Alerts"
+                      description="Notify on suspicious activity"
+                      defaultChecked={true}
+                    />
+                    <ToggleSetting
+                      title="Fraud Detection"
+                      description="AI-powered security monitoring"
+                      defaultChecked={true}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4">Wallet Protection</h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Max Transaction Limit (SOL)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="1.0"
+                      min="0.1"
+                      step="0.1"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Recovery Email
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4">Emergency Actions</h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <button className="px-4 py-3 bg-gradient-to-r from-red-600 to-orange-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(239,68,68,0.5)] hover:shadow-[0_0_20px_rgba(239,68,68,0.7)] transition-shadow">
+                    Emergency Shutdown (All Bots)
+                  </button>
+                  <button className="px-4 py-3 bg-gradient-to-r from-yellow-600 to-amber-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(245,158,11,0.5)] hover:shadow-[0_0_20px_rgba(245,158,11,0.7)] transition-shadow">
+                    Freeze All Transactions
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mt-6 bg-red-900/20 rounded-md p-3 border border-red-900/30">
+                <div className="flex">
+                  <AlertTriangle size={16} className="text-red-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div className="text-xs text-red-300">
+                    Security settings help protect your assets and trading activity. Enable two-factor authentication and transaction signing for maximum security. Emergency actions will immediately stop all bot activity and pending transactions.
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <Save size={16} className="mr-2" />
+                  Save Security Settings
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Trading Bots Settings */}
+          {activeSection === 'bots' && (
+            <div className="space-y-6">
+              {/* Volume Bot Settings */}
+              <BotSettingsCard
+                name="Volume Bot"
+                description="Detects and trades on volume spikes"
+                icon={<BarChart2 size={20} />}
+                color="purple"
+              >
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Volume Threshold (%)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="50"
+                      min="10"
+                      max="200"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Volume increase % to trigger action
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Timeframe (minutes)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="30"
+                      min="5"
+                      max="120"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Period to monitor volume changes
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <ToggleSetting
+                    title="Auto-Sell on Profit Target"
+                    description="Automatically sell when profit target is reached"
+                    defaultChecked={true}
+                  />
+                </div>
+              </BotSettingsCard>
+              
+              {/* Bundle Bot Settings */}
+              <BotSettingsCard
+                name="Bundle Bot"
+                description="Executes arbitrage between DEXs"
+                icon={<Zap size={20} />}
+                color="pink"
+              >
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Min Profit Threshold (%)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="0.8"
+                      min="0.1"
+                      max="5"
+                      step="0.1"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Minimum profit % to execute arbitrage
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Slippage Tolerance (%)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="0.2"
+                      min="0.1"
+                      max="3"
+                      step="0.1"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Maximum allowed slippage for trades
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <ToggleSetting
+                    title="Priority Fee"
+                    description="Use priority fees for faster execution"
+                    defaultChecked={true}
+                  />
+                </div>
+              </BotSettingsCard>
+              
+              {/* Sniper Bot Settings */}
+              <BotSettingsCard
+                name="Sniper Bot"
+                description="Detects new tokens with potential"
+                icon={<Eye size={20} />}
+                color="blue"
+              >
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Quality Threshold (%)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="65"
+                      min="50"
+                      max="95"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Token quality score minimum
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Initial Buy (SOL)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="0.1"
+                      min="0.01"
+                      max="1"
+                      step="0.01"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Initial purchase amount
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <ToggleSetting
+                    title="Auto-Sell Protection"
+                    description="Automatically sell if token drops rapidly"
+                    defaultChecked={true}
+                  />
+                </div>
+              </BotSettingsCard>
+              
+              {/* Bump Bot Settings */}
+              <BotSettingsCard
+                name="Bump Bot"
+                description="Optimizes transaction execution"
+                icon={<Server size={20} />}
+                color="cyan"
+              >
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Priority Fee (SOL)
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="0.0001"
+                      min="0.00001"
+                      max="0.001"
+                      step="0.00001"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Base priority fee amount
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Max Retries
+                    </label>
+                    <input
+                      type="number"
+                      defaultValue="3"
+                      min="1"
+                      max="10"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                    <div className="text-xs text-zinc-500 mt-1">
+                      Maximum transaction retry attempts
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <ToggleSetting
+                    title="Dynamic Fee Adjustment"
+                    description="Automatically adjust fees based on network congestion"
+                    defaultChecked={true}
+                  />
+                </div>
+              </BotSettingsCard>
+              
+              <div className="flex justify-end">
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <Save size={16} className="mr-2" />
+                  Save Bot Settings
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Network Settings */}
+          {activeSection === 'network' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Network size={14} className="mr-2" />
+                    Network Configuration
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        RPC Endpoint
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue="https://api.mainnet-beta.solana.com"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                      <div className="text-xs text-zinc-500 mt-1">
+                        Solana RPC endpoint URL
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Commitment Level
+                      </label>
+                      <div className="relative">
+                        <select
+                          defaultValue="confirmed"
+                          className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                        >
+                          <option value="processed">Processed</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="finalized">Finalized</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                          <ChevronDown size={16} className="text-purple-300" />
+                        </div>
+                      </div>
+                      <div className="text-xs text-zinc-500 mt-1">
+                        Transaction confirmation level
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Radio size={14} className="mr-2" />
+                    Connection Settings
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        WebSocket Endpoint
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue="wss://api.mainnet-beta.solana.com"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                      <div className="text-xs text-zinc-500 mt-1">
+                        For real-time updates
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Timeout (ms)
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue="30000"
+                        min="5000"
+                        max="60000"
+                        step="1000"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                      <div className="text-xs text-zinc-500 mt-1">
+                        Request timeout milliseconds
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4">Bundled Transaction Settings</h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <ToggleSetting
+                      title="Use Jito Bundler"
+                      description="Priority mempool access"
+                      defaultChecked={true}
+                    />
+                  </div>
+                  <div>
+                    <ToggleSetting
+                      title="Private RPC"
+                      description="Use private RPC connections"
+                      defaultChecked={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Bundler URL
+                    </label>
+                    <input
+                      type="text"
+                      defaultValue="https://jito-api.jup.ag"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-white mb-2">
+                      Tip Account
+                    </label>
+                    <input
+                      type="text"
+                      defaultValue="96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5"
+                      className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 bg-blue-900/20 rounded-md p-3 border border-blue-900/30">
+                <div className="flex">
+                  <Info size={16} className="text-blue-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div className="text-xs text-blue-300">
+                    Network settings affect connection stability, transaction speed, and confirmation times. Using Jito Bundler helps prevent front-running and provides better execution for your transactions. Private RPC connections may offer better performance but can incur additional costs.
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <Save size={16} className="mr-2" />
+                  Save Network Settings
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Advanced Settings */}
+          {activeSection === 'advanced' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Cpu size={14} className="mr-2" />
+                    Performance Settings
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Max Concurrent Transactions
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue="10"
+                        min="1"
+                        max="50"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Cache TTL (seconds)
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue="60"
+                        min="10"
+                        max="600"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                    </div>
+                    
+                    <ToggleSetting
+                      title="High Performance Mode"
+                      description="Optimizes for speed at higher resource usage"
+                      defaultChecked={false}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-sm font-medium text-purple-300 mb-4 flex items-center">
+                    <Database size={14} className="mr-2" />
+                    Data Management
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Log Level
+                      </label>
+                      <div className="relative">
+                        <select
+                          defaultValue="info"
+                          className="w-full appearance-none bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                        >
+                          <option value="error">Error</option>
+                          <option value="warn">Warning</option>
+                          <option value="info">Info</option>
+                          <option value="debug">Debug</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                          <ChevronDown size={16} className="text-purple-300" />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm text-white mb-2">
+                        Data Retention (days)
+                      </label>
+                      <input
+                        type="number"
+                        defaultValue="30"
+                        min="1"
+                        max="365"
+                        className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+                      />
+                    </div>
+                    
+                    <ToggleSetting
+                      title="Anonymous Analytics"
+                      description="Help improve CERBERUS with anonymous usage data"
+                      defaultChecked={true}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4">Experimental Features</h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <ToggleSetting
+                    title="AI Trade Prediction"
+                    description="Use AI to predict optimal trade times"
+                    defaultChecked={false}
+                  />
+                  <ToggleSetting
+                    title="MEV Extraction"
+                    description="Extract MEV opportunities (advanced)"
+                    defaultChecked={false}
+                  />
+                  <ToggleSetting
+                    title="Multi-Chain Support"
+                    description="Enable cross-chain trading features"
+                    defaultChecked={false}
+                  />
+                  <ToggleSetting
+                    title="Flashbots Integration"
+                    description="Private transaction submission"
+                    defaultChecked={false}
+                  />
+                </div>
+              </div>
+              
+              <div className="border-t border-zinc-800/50 pt-6">
+                <h3 className="text-sm font-medium text-purple-300 mb-4">Danger Zone</h3>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <button className="px-4 py-3 bg-red-900/20 border border-red-900/30 rounded text-red-400 text-sm font-medium hover:bg-red-900/30 transition-colors">
+                    Reset All Settings
+                  </button>
+                  <button className="px-4 py-3 bg-red-900/20 border border-red-900/30 rounded text-red-400 text-sm font-medium hover:bg-red-900/30 transition-colors">
+                    Clear All Data
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mt-6 bg-amber-900/20 rounded-md p-3 border border-amber-900/30">
+                <div className="flex">
+                  <AlertTriangle size={16} className="text-amber-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div className="text-xs text-amber-300">
+                    Advanced settings can significantly impact system performance and behavior. Experimental features are not fully tested and may cause unexpected results. The Danger Zone contains irreversible actions that will permanently delete your settings and data.
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+                  <Save size={16} className="mr-2" />
+                  Save Advanced Settings
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Settings Tab Component
+const SettingsTab = ({ icon, text, active, onClick }) => {
+  return (
+    <div
+      className={`px-6 py-3 flex items-center cursor-pointer transition-colors ${
+        active ? 'border-b-2 border-purple-500 text-white' : 'text-zinc-400 hover:text-white'
+      }`}
+      onClick={onClick}
+    >
+      <div className={active ? 'text-purple-400' : 'text-zinc-500'}>
+        {icon}
+      </div>
+      <span className="ml-2 text-sm font-medium">{text}</span>
+    </div>
+  );
+};
+
+// Toggle Setting Component
+const ToggleSetting = ({ title, description, defaultChecked }) => {
+  const [checked, setChecked] = useState(defaultChecked);
+  
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="text-sm text-white">{title}</div>
+        <div className="text-xs text-zinc-400">{description}</div>
+      </div>
+      <div className="relative inline-block w-12 align-middle select-none">
+        <input
+          type="checkbox"
+          id={`toggle-${title.toLowerCase().replace(/\s+/g, '-')}`}
+          className="sr-only"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+        />
+        <div className="block h-6 w-12 rounded-full bg-zinc-700"></div>
+        <div
+          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full transition-transform duration-200 ease-in-out ${
+            checked 
+              ? 'transform translate-x-6 bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_5px_rgba(168,85,247,0.7)]' 
+              : 'bg-zinc-400'
+          }`}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+// Bot Settings Card Component
+const BotSettingsCard = ({ name, description, icon, color, children }) => {
+  let gradientColors, borderColor, shadowColor;
+  
+  switch (color) {
+    case 'purple':
+      gradientColors = 'from-purple-500/20 to-fuchsia-500/10';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+      break;
+    case 'pink':
+      gradientColors = 'from-pink-500/20 to-rose-500/10';
+      borderColor = 'border-pink-900/30';
+      shadowColor = 'rgba(236,72,153,0.25)';
+      break;
+    case 'blue':
+      gradientColors = 'from-blue-500/20 to-cyan-500/10';
+      borderColor = 'border-blue-900/30';
+      shadowColor = 'rgba(59,130,246,0.25)';
+      break;
+    case 'cyan':
+      gradientColors = 'from-cyan-500/20 to-blue-500/10';
+      borderColor = 'border-cyan-900/30';
+      shadowColor = 'rgba(6,182,212,0.25)';
+      break;
+    default:
+      gradientColors = 'from-purple-500/20 to-fuchsia-500/10';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+  }
+
+  return (
+    <div className={`bg-gradient-to-r ${gradientColors} rounded-lg border ${borderColor} p-5 shadow-[0_0_15px_-5px_${shadowColor}]`}>
+      <div className="flex justify-between">
+        <div className="flex items-center">
+          <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${
+            color === 'purple' ? 'from-purple-600 to-fuchsia-600' :
+            color === 'pink' ? 'from-pink-600 to-rose-600' :
+            color === 'blue' ? 'from-blue-600 to-cyan-600' :
+            'from-cyan-600 to-blue-600'
+          } flex items-center justify-center mr-3 shadow-[0_0_10px_rgba(168,85,247,0.4)]`}>
+            {icon}
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-white">{name}</h3>
+            <p className="text-sm text-zinc-400">{description}</p>
+          </div>
+        </div>
+        <div className="relative inline-block w-12 align-middle select-none">
+          <input
+            type="checkbox"
+            id={`bot-toggle-${name.toLowerCase().replace(/\s+/g, '-')}`}
+            className="sr-only"
+            defaultChecked={false}
+          />
+          <div className="block h-6 w-12 rounded-full bg-zinc-700"></div>
+          <div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-zinc-400 transition-transform duration-200 ease-in-out"></div>
+        </div>
+      </div>
+      
+      {children}
+    </div>
+  );
+};
+
+export default BotSettingsTab;

@@ -1,0 +1,1391 @@
+import React, { useState } from 'react';
+import { 
+  Settings, RefreshCw, Save, ChevronDown, 
+  Sliders, Shield, Globe, Key, Database, 
+  Terminal, Clock, AlertTriangle, Check, 
+  Info, Radio, Server, Cpu, Wallet, 
+  Eye, Zap, Network, Lock, Rocket,
+  BarChart2, Activity, ArrowUpDown, 
+  DollarSign, PlusCircle, TrendingUp, TrendingDown,
+  MessageSquare, Play, Pause, Bell, Target,
+  Search, Filter, Trash2, Send, ExternalLink, Copy,
+  LineChart
+} from 'lucide-react';
+
+const CerberusDashboard = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeBotTab, setActiveBotTab] = useState('volume');
+  const [isVolumeActive, setIsVolumeActive] = useState(true);
+  const [isBundleActive, setIsBundleActive] = useState(true);
+  const [isSniperActive, setIsSniperActive] = useState(false);
+  const [isBumpActive, setIsBumpActive] = useState(false);
+  
+  return (
+    <div className="flex h-screen bg-black text-white overflow-hidden">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-zinc-950 border-r border-purple-900/30 flex flex-col">
+        {/* Logo */}
+        <div className="p-5 flex items-center border-b border-purple-900/30">
+          <div className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 text-transparent bg-clip-text drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">
+            CERBERUS
+          </div>
+          <div className="ml-2 text-white font-semibold">
+            BOT
+          </div>
+        </div>
+        
+        {/* Navigation */}
+        <div className="flex-1 overflow-auto">
+          <NavSection title="MAIN">
+            <NavItem 
+              icon={<BarChart2 size={18} />} 
+              text="Dashboard" 
+              active={activeTab === 'dashboard'} 
+              onClick={() => setActiveTab('dashboard')}
+            />
+            <NavItem 
+              icon={<Zap size={18} />} 
+              text="Trading Bots" 
+              active={activeTab === 'bots'} 
+              onClick={() => setActiveTab('bots')}
+            />
+            <NavItem 
+              icon={<Activity size={18} />} 
+              text="Market Data" 
+              active={activeTab === 'market'} 
+              onClick={() => setActiveTab('market')}
+            />
+            <NavItem 
+              icon={<Wallet size={18} />} 
+              text="Wallet Manager" 
+              active={activeTab === 'wallet-manager'} 
+              onClick={() => setActiveTab('wallet-manager')}
+            />
+          </NavSection>
+          
+          <NavSection title="TRADING">
+            <NavItem 
+              icon={<ArrowUpDown size={18} transform="rotate(90)" />} 
+              text="Quick Buys" 
+              active={activeTab === 'quick-buys'} 
+              onClick={() => setActiveTab('quick-buys')}
+            />
+            <NavItem 
+              icon={<ArrowUpDown size={18} />} 
+              text="Quick Sells" 
+              active={activeTab === 'quick-sells'} 
+              onClick={() => setActiveTab('quick-sells')}
+            />
+            <NavItem 
+              icon={<Users size={18} />} 
+              text="Human Mode" 
+              active={activeTab === 'human-mode'} 
+              onClick={() => setActiveTab('human-mode')}
+            />
+            <NavItem 
+              icon={<Eye size={18} />} 
+              text="Token Monitor" 
+              active={activeTab === 'token-monitor'} 
+              onClick={() => setActiveTab('token-monitor')}
+            />
+            <NavItem 
+              icon={<MessageCircle size={18} />} 
+              text="Comment Bot" 
+              active={activeTab === 'comment-bot'} 
+              onClick={() => setActiveTab('comment-bot')}
+            />
+          </NavSection>
+          
+          <NavSection title="SETTINGS">
+            <NavItem 
+              icon={<Settings size={18} />} 
+              text="Bot Settings" 
+              active={activeTab === 'settings'} 
+              onClick={() => setActiveTab('settings')}
+            />
+            <NavItem 
+              icon={<Database size={18} />} 
+              text="Dev Wallet" 
+              active={activeTab === 'dev-wallet'} 
+              onClick={() => setActiveTab('dev-wallet')}
+            />
+          </NavSection>
+        </div>
+        
+        {/* User Info */}
+        <div className="border-t border-purple-900/30 p-4 flex items-center">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            C
+          </div>
+          <div className="ml-3">
+            <div className="text-sm font-medium">CERBERUS</div>
+            <div className="text-xs text-purple-400">Alpha v0.1</div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {activeTab === 'bots' && <BotsTabs activeBotTab={activeBotTab} setActiveBotTab={setActiveBotTab} />}
+        
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto p-5 bg-black">
+          {activeTab === 'dashboard' && <DashboardContent />}
+          {activeTab === 'bots' && (
+            <BotsContent 
+              activeBot={activeBotTab} 
+              isVolumeActive={isVolumeActive} 
+              setIsVolumeActive={setIsVolumeActive}
+              isBundleActive={isBundleActive}
+              setIsBundleActive={setIsBundleActive}
+              isSniperActive={isSniperActive}
+              setIsSniperActive={setIsSniperActive}
+              isBumpActive={isBumpActive}
+              setIsBumpActive={setIsBumpActive}
+            />
+          )}
+          {activeTab === 'settings' && <SettingsContent />}
+          {activeTab === 'wallet-manager' && <WalletManagerContent />}
+          {activeTab === 'dev-wallet' && <DevWalletContent />}
+          {activeTab === 'market' && <MarketDataContent />}
+          {activeTab === 'quick-buys' && <QuickBuysContent />}
+          {activeTab === 'quick-sells' && <QuickSellsContent />}
+          {activeTab === 'token-monitor' && <TokenMonitorContent />}
+          {activeTab === 'human-mode' && <HumanModeContent />}
+          {activeTab === 'comment-bot' && <CommentBotContent />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Helper components
+const NavSection = ({ title, children }) => {
+  return (
+    <div className="my-2">
+      <div className="px-4 py-2 text-xs text-purple-400 font-semibold">{title}</div>
+      {children}
+    </div>
+  );
+};
+
+const NavItem = ({ icon, text, active = false, onClick }) => {
+  return (
+    <div 
+      className={`flex items-center px-4 py-3 cursor-pointer transition-all ${
+        active 
+          ? 'bg-gradient-to-r from-purple-900/30 to-pink-900/20 border-l-2 border-fuchsia-500 shadow-[0_0_20px_-5px_rgba(217,70,239,0.5)]' 
+          : 'hover:bg-zinc-900 border-l-2 border-transparent'
+      }`}
+      onClick={onClick}
+    >
+      <div className={`${active ? 'text-fuchsia-400' : 'text-zinc-400'} mr-3`}>{icon}</div>
+      <div className={`${active ? 'text-white' : 'text-zinc-400'}`}>{text}</div>
+    </div>
+  );
+};
+
+const BotsTabs = ({ activeBotTab, setActiveBotTab }) => {
+  return (
+    <div className="bg-zinc-950 border-b border-purple-900/30 px-4 flex items-center h-12">
+      <BotTab 
+        icon={<Activity size={16} />} 
+        text="Volume Bot" 
+        active={activeBotTab === 'volume'} 
+        onClick={() => setActiveBotTab('volume')}
+      />
+      <BotTab 
+        icon={<Zap size={16} />} 
+        text="Bundle Bot" 
+        active={activeBotTab === 'bundle'} 
+        onClick={() => setActiveBotTab('bundle')}
+      />
+      <BotTab 
+        icon={<Eye size={16} />} 
+        text="Sniper Bot" 
+        active={activeBotTab === 'sniper'} 
+        onClick={() => setActiveBotTab('sniper')}
+      />
+      <BotTab 
+        icon={<ArrowUpDown size={16} />} 
+        text="Bump Bot" 
+        active={activeBotTab === 'bump'} 
+        onClick={() => setActiveBotTab('bump')}
+      />
+    </div>
+  );
+};
+
+const BotTab = ({ icon, text, active, onClick }) => {
+  return (
+    <div 
+      className={`flex items-center px-4 py-2 mr-2 rounded-t cursor-pointer transition-colors ${
+        active 
+          ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50 text-fuchsia-300 shadow-[0_5px_15px_-5px_rgba(217,70,239,0.5)]' 
+          : 'text-purple-300 hover:text-white hover:bg-purple-900/20'
+      }`}
+      onClick={onClick}
+    >
+      <div className="mr-2">{icon}</div>
+      <div className="text-sm font-medium">{text}</div>
+    </div>
+  );
+};
+
+const StatsCard = ({ title, value, icon, trend, color }) => {
+  let gradient, textColor, borderColor, shadowColor;
+  
+  switch (color) {
+    case 'purple':
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+      break;
+    case 'pink':
+      gradient = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      borderColor = 'border-pink-900/30';
+      shadowColor = 'rgba(236,72,153,0.25)';
+      break;
+    case 'blue':
+      gradient = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      borderColor = 'border-blue-900/30';
+      shadowColor = 'rgba(59,130,246,0.25)';
+      break;
+    case 'cyan':
+      gradient = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      borderColor = 'border-cyan-900/30';
+      shadowColor = 'rgba(6,182,212,0.25)';
+      break;
+    default:
+      gradient = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      borderColor = 'border-purple-900/30';
+      shadowColor = 'rgba(168,85,247,0.25)';
+  }
+
+  return (
+    <div className={`bg-zinc-950 rounded-lg border ${borderColor} shadow-[0_0_20px_-5px_${shadowColor}] p-4`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className={`${textColor} text-sm`}>{title}</div>
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradient} flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.5)]`}>
+          {icon}
+        </div>
+      </div>
+      <div className="text-xl font-bold text-white">{value}</div>
+      {trend && (
+        <div className={`text-xs ${trend.startsWith('+') ? 'text-green-400' : 'text-red-400'} mt-1`}>
+          {trend} {trend.includes('%') ? '' : 'today'}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const BotSettingsCard = ({ title, value, description, icon, color }) => {
+  let gradientColors, textColor;
+  
+  switch (color) {
+    case 'purple':
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+      break;
+    case 'pink':
+      gradientColors = 'from-pink-500 to-rose-500';
+      textColor = 'text-pink-300';
+      break;
+    case 'blue':
+      gradientColors = 'from-blue-500 to-cyan-500';
+      textColor = 'text-blue-300';
+      break;
+    case 'cyan':
+      gradientColors = 'from-cyan-500 to-blue-500';
+      textColor = 'text-cyan-300';
+      break;
+    default:
+      gradientColors = 'from-purple-500 to-fuchsia-500';
+      textColor = 'text-purple-300';
+  }
+
+  return (
+    <div className="bg-zinc-900/70 rounded-lg border border-zinc-800/50 p-4">
+      <div className="flex items-center mb-2">
+        <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradientColors} flex items-center justify-center mr-3 shadow-[0_0_10px_rgba(168,85,247,0.3)]`}>
+          {React.cloneElement(icon, { size: 16 })}
+        </div>
+        <div className="text-sm font-medium text-white">{title}</div>
+      </div>
+      <div className="text-xl font-bold text-white mb-1">{value}</div>
+      <div className={`text-xs ${textColor}`}>{description}</div>
+    </div>
+  );
+};
+
+const ActivityLogItem = ({ time, message, type }) => {
+  let bgColor, textColor, iconColor, icon;
+  
+  switch (type) {
+    case 'info':
+      bgColor = 'bg-blue-900/20';
+      textColor = 'text-blue-300';
+      iconColor = 'text-blue-400';
+      icon = <Info size={14} />;
+      break;
+    case 'success':
+      bgColor = 'bg-green-900/20';
+      textColor = 'text-green-300';
+      iconColor = 'text-green-400';
+      icon = <Check size={14} />;
+      break;
+    case 'warning':
+      bgColor = 'bg-yellow-900/20';
+      textColor = 'text-yellow-300';
+      iconColor = 'text-yellow-400';
+      icon = <AlertTriangle size={14} />;
+      break;
+    case 'error':
+      bgColor = 'bg-red-900/20';
+      textColor = 'text-red-300';
+      iconColor = 'text-red-400';
+      icon = <X size={14} />;
+      break;
+    case 'normal':
+    default:
+      bgColor = 'bg-zinc-900';
+      textColor = 'text-zinc-300';
+      iconColor = 'text-zinc-400';
+      icon = <Clock size={14} />;
+  }
+
+  return (
+    <div className={`flex items-start rounded p-2 ${bgColor}`}>
+      <div className={`mr-3 mt-0.5 ${iconColor}`}>
+        {icon}
+      </div>
+      <div className="flex-1">
+        <div className={`text-xs ${textColor}`}>{message}</div>
+        <div className="text-xs text-zinc-500 mt-0.5">{time}</div>
+      </div>
+    </div>
+  );
+};
+
+const ToggleSetting = ({ title, description, defaultChecked }) => {
+  const [checked, setChecked] = useState(defaultChecked);
+  
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="text-sm text-white">{title}</div>
+        <div className="text-xs text-zinc-400">{description}</div>
+      </div>
+      <div className="relative inline-block w-12 align-middle select-none">
+        <input
+          type="checkbox"
+          id={`toggle-${title.toLowerCase().replace(/\s+/g, '-')}`}
+          className="sr-only"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+        />
+        <div className="block h-6 w-12 rounded-full bg-zinc-700"></div>
+        <div
+          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full transition-transform duration-200 ease-in-out ${
+            checked 
+              ? 'transform translate-x-6 bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_5px_rgba(168,85,247,0.7)]' 
+              : 'bg-zinc-400'
+          }`}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+const VolumeBar = ({ height, color, label }) => {
+  let barColors, glow;
+  
+  switch (color) {
+    case 'spike':
+      barColors = 'bg-gradient-to-t from-purple-500 to-fuchsia-500';
+      glow = 'shadow-[0_0_10px_rgba(168,85,247,0.5)]';
+      break;
+    default:
+      barColors = 'bg-purple-900/60';
+      glow = '';
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-6">
+        <div 
+          className={`w-6 ${barColors} rounded-t ${glow}`} 
+          style={{ height }}
+        ></div>
+        {label && (
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 px-1.5 py-0.5 bg-purple-900/80 text-purple-300 text-xs rounded whitespace-nowrap">
+            {label}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Custom icons
+const MessageCircle = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+  </svg>
+);
+
+const X = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+const Users = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  </svg>
+);
+
+const Edit = ({ size, className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+  </svg>
+);
+
+// Main content components
+const DashboardContent = () => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <RefreshCw size={14} className="mr-2" />
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-4 gap-4">
+        <StatsCard title="Active Bots" value="2/4" icon={<Zap size={20} />} trend="+1" color="purple" />
+        <StatsCard title="Wallets" value="16" icon={<Wallet size={20} />} trend="+3" color="pink" />
+        <StatsCard title="24h Volume" value="$125,367" icon={<BarChart2 size={20} />} trend="+12.5%" color="blue" />
+        <StatsCard title="Profit/Loss" value="+$1,248" icon={<Activity size={20} />} trend="+5.2%" color="cyan" />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-6">
+        {/* Bot Status Cards */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Active Bots</h2>
+          </div>
+          <div className="p-4 space-y-4">
+            <BotStatusCard
+              name="Volume Bot"
+              description="Detects and trades on volume spikes"
+              status="Active"
+              isActive={true}
+              lastAction="CBRS/SOL (14:32)"
+              color="purple"
+            />
+            <BotStatusCard
+              name="Bundle Bot"
+              description="Executes arbitrage between DEXs"
+              status="Active"
+              isActive={true}
+              lastAction="CBRS/SOL (0.79% gain)"
+              color="pink"
+            />
+            <BotStatusCard
+              name="Sniper Bot"
+              description="Detects new tokens with potential"
+              status="Inactive"
+              isActive={false}
+              lastAction="None"
+              color="blue"
+            />
+            <BotStatusCard
+              name="Bump Bot"
+              description="Optimizes transaction execution"
+              status="Inactive"
+              isActive={false}
+              lastAction="None"
+              color="cyan"
+            />
+          </div>
+        </div>
+        
+        {/* Recent Transactions */}
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Recent Transactions</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-2">
+              <TransactionRow
+                token="CBRS/SOL"
+                type="BUY"
+                amount="1000 CBRS"
+                price="0.00125 SOL"
+                time="14:32:05"
+                status="Completed"
+              />
+              <TransactionRow
+                token="SOL/USDC"
+                type="BUY"
+                amount="2.45 SOL"
+                price="$152.34"
+                time="13:45:21"
+                status="Completed"
+              />
+              <TransactionRow
+                token="CBRS/SOL"
+                type="SELL"
+                amount="500 CBRS"
+                price="0.00128 SOL"
+                time="12:30:15"
+                status="Completed"
+              />
+              <TransactionRow
+                token="CBRS/USDC"
+                type="BUY"
+                amount="200 CBRS"
+                price="$0.25"
+                time="11:22:30"
+                status="Pending"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Token Monitor */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Token Monitor</h2>
+          <button className="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            <PlusCircle size={14} className="mr-2" />
+            Add Token
+          </button>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-6 text-sm text-purple-300 pb-2 border-b border-zinc-800">
+            <div>Token</div>
+            <div>Price</div>
+            <div>24h Change</div>
+            <div>Market Cap</div>
+            <div>Volume</div>
+            <div></div>
+          </div>
+          <div className="divide-y divide-zinc-800/50">
+            <TokenRow
+              name="CERBERUS"
+              symbol="CBRS"
+              price="$0.000125"
+              change={"+5.2%"}
+              isPositive={true}
+              marketCap="$1.25M"
+              volume="$125,367"
+            />
+            <TokenRow
+              name="Solana"
+              symbol="SOL"
+              price="$152.34"
+              change={"+2.3%"}
+              isPositive={true}
+              marketCap="$65.2B"
+              volume="$2.1B"
+            />
+            <TokenRow
+              name="Jupiter"
+              symbol="JUP"
+              price="$7.89"
+              change={"-1.4%"}
+              isPositive={false}
+              marketCap="$1.1B"
+              volume="$87.5M"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BotsContent = ({ 
+  activeBot, 
+  isVolumeActive, 
+  setIsVolumeActive,
+  isBundleActive,
+  setIsBundleActive,
+  isSniperActive,
+  setIsSniperActive,
+  isBumpActive,
+  setIsBumpActive
+}) => {
+  const toggleActiveStatus = (bot) => {
+    switch(bot) {
+      case 'volume':
+        setIsVolumeActive(!isVolumeActive);
+        break;
+      case 'bundle':
+        setIsBundleActive(!isBundleActive);
+        break;
+      case 'sniper':
+        setIsSniperActive(!isSniperActive);
+        break;
+      case 'bump':
+        setIsBumpActive(!isBumpActive);
+        break;
+    }
+  };
+  
+  const isActive = () => {
+    switch(activeBot) {
+      case 'volume': return isVolumeActive;
+      case 'bundle': return isBundleActive;
+      case 'sniper': return isSniperActive;
+      case 'bump': return isBumpActive;
+      default: return false;
+    }
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">
+          {activeBot === 'volume' && 'Volume Bot'}
+          {activeBot === 'bundle' && 'Bundle Bot'}
+          {activeBot === 'sniper' && 'Sniper Bot'}
+          {activeBot === 'bump' && 'Bump Bot'}
+        </h1>
+        <div className="flex space-x-2">
+          <button 
+            className={`flex items-center px-4 py-2 rounded text-white text-sm font-medium ${
+              isActive()
+                ? 'bg-gradient-to-r from-red-600 to-orange-600 shadow-[0_0_10px_rgba(239,68,68,0.5)]' 
+                : 'bg-gradient-to-r from-green-600 to-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
+            }`}
+            onClick={() => toggleActiveStatus(activeBot)}
+          >
+            {isActive() ? (
+              <>
+                <Pause size={16} className="mr-2" />
+                Stop Bot
+              </>
+            ) : (
+              <>
+                <Play size={16} className="mr-2" />
+                Start Bot
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      
+      {activeBot === 'volume' && (
+        <VolumeBotContent isRunning={isVolumeActive} />
+      )}
+      
+      {activeBot === 'bundle' && (
+        <BundleBotContent isRunning={isBundleActive} />
+      )}
+      
+      {activeBot === 'sniper' && (
+        <SniperBotContent isRunning={isSniperActive} />
+      )}
+      
+      {activeBot === 'bump' && (
+        <BumpBotContent isRunning={isBumpActive} />
+      )}
+    </div>
+  );
+};
+
+const VolumeBotContent = ({ isRunning }) => {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <BotSettingsCard
+          title="Threshold"
+          value="50%"
+          description="Volume increase detection threshold"
+          icon={<Activity />}
+          color="purple"
+        />
+        <BotSettingsCard
+          title="Timeframe"
+          value="30 min"
+          description="Volume analysis timeframe"
+          icon={<Clock />}
+          color="purple"
+        />
+        <BotSettingsCard
+          title="Trade Size"
+          value="0.5 SOL"
+          description="Maximum trade amount per transaction"
+          icon={<Wallet />}
+          color="purple"
+        />
+        <BotSettingsCard
+          title="Protection"
+          value="Enabled"
+          description="Anti-rug pull protection active"
+          icon={<Shield />}
+          color="purple"
+        />
+      </div>
+      
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Volume Chart</h2>
+          </div>
+          <div className="p-4 h-64 relative">
+            {/* Simple volume chart visualization */}
+            <div className="absolute inset-0">
+              {/* Background grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between">
+                <div className="w-full h-px bg-zinc-800"></div>
+                <div className="w-full h-px bg-zinc-800/70"></div>
+                <div className="w-full h-px bg-zinc-800/70"></div>
+                <div className="w-full h-px bg-zinc-800/70"></div>
+                <div className="w-full h-px bg-zinc-800"></div>
+              </div>
+              
+              {/* Volume bars */}
+              <div className="absolute bottom-0 inset-x-0 flex items-end justify-between px-2 h-full">
+                <VolumeBar height="30%" color="normal" />
+                <VolumeBar height="45%" color="normal" />
+                <VolumeBar height="25%" color="normal" />
+                <VolumeBar height="60%" color="normal" />
+                <VolumeBar height="40%" color="normal" />
+                <VolumeBar height="20%" color="normal" />
+                <VolumeBar height="30%" color="normal" />
+                <VolumeBar height="70%" color="spike" label="Detected" />
+                <VolumeBar height="85%" color="spike" label="Buy" />
+                <VolumeBar height="55%" color="normal" />
+                <VolumeBar height="45%" color="normal" />
+                <VolumeBar height="35%" color="normal" />
+              </div>
+              
+              {/* Threshold line */}
+              <div className="absolute left-0 right-0 top-1/2 border-t border-dashed border-purple-500/50"></div>
+              
+              {/* Threshold label */}
+              <div className="absolute right-0 top-1/2 -mt-3 px-2 py-0.5 bg-purple-900/80 text-purple-300 text-xs rounded-l">
+                50% Threshold
+              </div>
+              
+              {/* Time axis */}
+              <div className="absolute left-0 right-0 bottom-0 border-t border-zinc-800 pt-1 flex justify-between px-2">
+                <div className="text-xs text-zinc-500">12:00</div>
+                <div className="text-xs text-zinc-500">13:00</div>
+                <div className="text-xs text-zinc-500">14:00</div>
+                <div className="text-xs text-zinc-500">15:00</div>
+                <div className="text-xs text-zinc-500">16:00</div>
+                <div className="text-xs text-zinc-500">17:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Bot Activity</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-3">
+              {isRunning ? (
+                <>
+                  <ActivityLogItem
+                    time="14:32:05"
+                    message="Volume spike detected on CBRS/SOL"
+                    type="info"
+                  />
+                  <ActivityLogItem
+                    time="14:32:08"
+                    message="Executing BUY order: 1000 CBRS"
+                    type="success"
+                  />
+                  <ActivityLogItem
+                    time="14:15:30"
+                    message="Monitoring volume patterns..."
+                    type="normal"
+                  />
+                  <ActivityLogItem
+                    time="13:45:12"
+                    message="Potential rug pull detected. Order cancelled."
+                    type="warning"
+                  />
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-32 text-zinc-500">
+                  <Activity size={24} className="mb-2 opacity-50" />
+                  <p className="text-sm">Bot is currently inactive</p>
+                  <p className="text-xs mt-1">Start the bot to see activity</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4 flex items-center justify-between">
+          <h2 className="text-lg font-medium text-white">Volume Bot Settings</h2>
+          <button className="flex items-center px-3 py-1.5 bg-zinc-900 rounded border border-zinc-800 text-zinc-300 text-sm">
+            <Settings size={14} className="mr-2" />
+            Edit Settings
+          </button>
+        </div>
+        <div className="p-4 grid grid-cols-2 gap-6">
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Volume Threshold (%)
+              </label>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                defaultValue="50"
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                <span>10%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Time Window (minutes)
+              </label>
+              <input
+                type="range"
+                min="5"
+                max="60"
+                defaultValue="30"
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                <span>5 min</span>
+                <span>30 min</span>
+                <span>60 min</span>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div className="mb-4">
+              <label className="block text-sm text-purple-300 mb-1.5">
+                Maximum Trade Size (SOL)
+              </label>
+              <input
+                type="text"
+                defaultValue="0.5"
+                className="w-full bg-zinc-900 border border-purple-900/50 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.25)]"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="flex items-center space-x-2 text-sm text-purple-300">
+                <input type="checkbox" defaultChecked className="rounded text-purple-500" />
+                <span>Enable rug pull protection</span>
+              </label>
+            </div>
+            
+            <div className="mb-4">
+              <label className="flex items-center space-x-2 text-sm text-purple-300">
+                <input type="checkbox" defaultChecked className="rounded text-purple-500" />
+                <span>Auto-sell on profit target (15%)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const BundleBotContent = ({ isRunning }) => {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <BotSettingsCard
+          title="Profit Threshold"
+          value="0.8%"
+          description="Minimum profit for arbitrage"
+          icon={<Target />}
+          color="pink"
+        />
+        <BotSettingsCard
+          title="Slippage"
+          value="0.2%"
+          description="Maximum allowed slippage"
+          icon={<Sliders />}
+          color="pink"
+        />
+        <BotSettingsCard
+          title="DEX Routing"
+          value="3 DEXs"
+          description="Raydium, Jupiter, Orca"
+          icon={<Rocket />}
+          color="pink"
+        />
+        <BotSettingsCard
+          title="Priority Fee"
+          value="Enabled"
+          description="Faster transaction execution"
+          icon={<Zap />}
+          color="pink"
+        />
+      </div>
+      
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">DEX Price Comparison</h2>
+          </div>
+          <div className="p-4 h-64 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center mr-2 shadow-[0_0_5px_rgba(16,185,129,0.5)]">
+                  R
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-white">Raydium</div>
+                  <div className="text-xs text-zinc-400">CBRS/SOL</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium text-white">0.00124 SOL</div>
+                <div className="text-xs text-zinc-400">Per CBRS</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mr-2 shadow-[0_0_5px_rgba(59,130,246,0.5)]">
+                  J
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-white">Jupiter</div>
+                  <div className="text-xs text-zinc-400">CBRS/SOL</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium text-white">0.00125 SOL</div>
+                <div className="text-xs text-green-400">+0.8% diff</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center mr-2 shadow-[0_0_5px_rgba(249,115,22,0.5)]">
+                  O
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-white">Orca</div>
+                  <div className="text-xs text-zinc-400">CBRS/SOL</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-medium text-white">0.00123 SOL</div>
+                <div className="text-xs text-red-400">-0.8% diff</div>
+              </div>
+            </div>
+            
+            <div className="pt-4 mt-4 border-t border-zinc-800">
+              <div className="p-3 bg-gradient-to-r from-pink-900/20 to-purple-900/10 rounded border border-pink-900/30 flex items-center justify-between">
+                <div className="flex items-center">
+                  <Zap size={16} className="text-pink-400 mr-2" />
+                  <div className="text-sm text-white">Arbitrage Opportunity</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-green-400">+0.8% Profit</div>
+                  <div className="text-xs text-zinc-400">Raydium → Jupiter</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+          <div className="border-b border-purple-900/30 p-4">
+            <h2 className="text-lg font-medium text-white">Bot Activity</h2>
+          </div>
+          <div className="p-4">
+            <div className="space-y-3">
+              {isRunning ? (
+                <>
+                  <ActivityLogItem
+                    time="14:28:15"
+                    message="Arbitrage executed: Raydium → Jupiter"
+                    type="success"
+                  />
+                  <ActivityLogItem
+                    time="14:28:12"
+                    message="Arbitrage opportunity detected (0.8%)"
+                    type="info"
+                  />
+                  <ActivityLogItem
+                    time="14:15:30"
+                    message="Scanning DEX prices..."
+                    type="normal"
+                  />
+                  <ActivityLogItem
+                    time="14:05:22"
+                    message="Insufficient profit: 0.3% (below 0.8%)"
+                    type="warning"
+                  />
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-32 text-zinc-500">
+                  <Zap size={24} className="mb-2 opacity-50" />
+                  <p className="text-sm">Bot is currently inactive</p>
+                  <p className="text-xs mt-1">Start the bot to see activity</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const SniperBotContent = ({ isRunning }) => {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <BotSettingsCard
+          title="Quality Threshold"
+          value="65%"
+          description="Token quality score minimum"
+          icon={<Target />}
+          color="blue"
+        />
+        <BotSettingsCard
+          title="Initial Buy"
+          value="0.1 SOL"
+          description="First purchase amount"
+          icon={<Sliders />}
+          color="blue"
+        />
+        <BotSettingsCard
+          title="Monitoring"
+          value="Active"
+          description="Tracking new listings"
+          icon={<Eye />}
+          color="blue"
+        />
+        <BotSettingsCard
+          title="Protection"
+          value="Enabled"
+          description="Auto-sell on suspicious activity"
+          icon={<Shield />}
+          color="blue"
+        />
+      </div>
+      
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="border-b border-purple-900/30 p-4">
+          <h2 className="text-lg font-medium text-white">Recent Token Listings</h2>
+        </div>
+        <div className="p-4">
+          <div className="space-y-3">
+            {isRunning ? (
+              <>
+                <TokenListingRow
+                  name="MoonPepe"
+                  symbol="MPEPE"
+                  score={72}
+                  time="14:28:15"
+                  status="purchased"
+                  initialPrice="0.00000035"
+                />
+                <TokenListingRow
+                  name="BonkChad"
+                  symbol="BCHAD"
+                  score={68}
+                  time="13:45:22"
+                  status="purchased"
+                  initialPrice="0.00000089"
+                />
+                <TokenListingRow
+                  name="SolKitty"
+                  symbol="KITTY"
+                  score={45}
+                  time="12:32:10"
+                  status="rejected"
+                  initialPrice="0.00000012"
+                />
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-32 text-zinc-500">
+                <Eye size={24} className="mb-2 opacity-50" />
+                <p className="text-sm">Bot is currently inactive</p>
+                <p className="text-xs mt-1">Start the bot to see activity</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const BumpBotContent = ({ isRunning }) => {
+  return (
+    <div className="grid grid-cols-4 gap-4 mb-6">
+      <BotSettingsCard
+        title="Priority Fee"
+        value="0.0001 SOL"
+        description="Base priority fee amount"
+        icon={<Zap />}
+        color="cyan"
+      />
+      <BotSettingsCard
+        title="Max Retries"
+        value="3"
+        description="Transaction retry attempts"
+        icon={<RefreshCw />}
+        color="cyan"
+      />
+      <BotSettingsCard
+        title="Dynamic Fees"
+        value="Enabled"
+        description="Adjusts based on congestion"
+        icon={<Sliders />}
+        color="cyan"
+      />
+      <BotSettingsCard
+        title="Bundling"
+        value="Jito MEV"
+        description="Anti-frontrunning protection"
+        icon={<Shield />}
+        color="cyan"
+      />
+    </div>
+  );
+};
+
+const BotStatusCard = ({ name, description, status, isActive, lastAction, color }) => {
+  let gradient;
+  
+  switch (color) {
+    case 'purple':
+      gradient = 'from-purple-500 to-fuchsia-500';
+      break;
+    case 'pink':
+      gradient = 'from-pink-500 to-rose-500';
+      break;
+    case 'blue':
+      gradient = 'from-blue-500 to-cyan-500';
+      break;
+    case 'cyan':
+      gradient = 'from-cyan-500 to-blue-500';
+      break;
+    default:
+      gradient = 'from-purple-500 to-fuchsia-500';
+  }
+
+  return (
+    <div className="flex items-center bg-zinc-900 rounded-lg p-3">
+      <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center mr-4 shadow-[0_0_10px_rgba(168,85,247,0.5)]`}>
+        {color === 'purple' && <Activity size={18} />}
+        {color === 'pink' && <Zap size={18} />}
+        {color === 'blue' && <Eye size={18} />}
+        {color === 'cyan' && <ArrowUpDown size={18} />}
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <div className="font-medium text-white">{name}</div>
+          <div className={`text-xs px-2 py-0.5 rounded ${isActive ? 'bg-green-900/30 text-green-400' : 'bg-zinc-800 text-zinc-400'}`}>
+            {status}
+          </div>
+        </div>
+        <div className="text-xs text-zinc-400 mt-0.5">{description}</div>
+        {lastAction !== 'None' && (
+          <div className="text-xs text-purple-300 mt-1">Last Action: {lastAction}</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const TransactionRow = ({ token, type, amount, price, time, status }) => {
+  return (
+    <div className="grid grid-cols-5 py-2 px-3 rounded bg-zinc-900 text-sm">
+      <div className="text-white">{token}</div>
+      <div className={type === 'BUY' ? 'text-green-400' : 'text-red-400'}>
+        {type}
+      </div>
+      <div className="text-zinc-300">{amount}</div>
+      <div className="text-zinc-300">{price}</div>
+      <div className="flex items-center justify-between">
+        <div className="text-zinc-400">{time}</div>
+        <div className={`text-xs px-2 py-0.5 rounded ${
+          status === 'Completed' ? 'bg-green-900/30 text-green-400' : 'bg-yellow-900/30 text-yellow-400'
+        }`}>
+          {status}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TokenRow = ({ name, symbol, price, change, isPositive, marketCap, volume }) => {
+  return (
+    <div className="grid grid-cols-6 py-3 text-sm">
+      <div className="flex items-center">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+          {symbol.charAt(0)}
+        </div>
+        <div>
+          <div className="text-white">{name}</div>
+          <div className="text-xs text-zinc-400">{symbol}</div>
+        </div>
+      </div>
+      <div className="text-white">{price}</div>
+      <div className={isPositive ? 'text-green-400' : 'text-red-400'}>
+        {isPositive ? (
+          <div className="flex items-center">
+            <TrendingUp size={14} className="mr-1" />
+            {change}
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <TrendingDown size={14} className="mr-1" />
+            {change}
+          </div>
+        )}
+      </div>
+      <div className="text-zinc-300">{marketCap}</div>
+      <div className="text-zinc-300">{volume}</div>
+      <div className="flex justify-end space-x-1">
+        <button className="p-1.5 rounded bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+          <LineChart size={14} />
+        </button>
+        <button className="p-1.5 rounded bg-green-900/30 text-green-400 hover:bg-green-900/50">
+          <ArrowUpDown size={14} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const TokenListingRow = ({ name, symbol, score, time, status, initialPrice }) => {
+  let statusBg, statusText, statusIcon;
+  
+  switch (status) {
+    case 'purchased':
+      statusBg = 'bg-green-900/30';
+      statusText = 'text-green-400';
+      statusIcon = <Check size={12} className="mr-1" />;
+      break;
+    case 'rejected':
+      statusBg = 'bg-red-900/30';
+      statusText = 'text-red-400';
+      statusIcon = <X size={12} className="mr-1" />;
+      break;
+    default:
+      statusBg = 'bg-zinc-800';
+      statusText = 'text-zinc-400';
+      statusIcon = <Clock size={12} className="mr-1" />;
+  }
+
+  let scoreColor;
+  if (score >= 70) {
+    scoreColor = 'text-green-400';
+  } else if (score >= 50) {
+    scoreColor = 'text-yellow-400';
+  } else {
+    scoreColor = 'text-red-400';
+  }
+
+  return (
+    <div className="p-3 bg-zinc-900/70 rounded-lg border border-zinc-800/50 flex items-center justify-between">
+      <div className="flex items-center">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mr-3 shadow-[0_0_5px_rgba(59,130,246,0.5)]">
+          {symbol.charAt(0)}
+        </div>
+        <div>
+          <div className="text-sm font-medium text-white">{name}</div>
+          <div className="text-xs text-zinc-400">{symbol}</div>
+        </div>
+      </div>
+      
+      <div className="text-center">
+        <div className={`text-sm font-medium ${scoreColor}`}>{score}%</div>
+        <div className="text-xs text-zinc-400">Quality</div>
+      </div>
+      
+      <div className="text-right">
+        <div className="text-sm text-white">{initialPrice}</div>
+        <div className="text-xs text-zinc-400">Initial Price</div>
+      </div>
+      
+      <div className="flex flex-col items-end">
+        <div className={`flex items-center px-2 py-0.5 rounded text-xs ${statusBg} ${statusText}`}>
+          {statusIcon}
+          {status === 'purchased' ? 'Purchased' : status === 'rejected' ? 'Rejected' : 'Pending'}
+        </div>
+        <div className="text-xs text-zinc-500 mt-1">{time}</div>
+      </div>
+    </div>
+  );
+};
+
+// Placeholder components
+const SettingsContent = () => {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-white">Bot Settings</h1>
+        <div className="flex space-x-2">
+          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded text-white text-sm font-medium shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.7)] transition-shadow">
+            <Save size={16} className="mr-2" />
+            Save All Settings
+          </button>
+        </div>
+      </div>
+      
+      {/* Settings Navigation */}
+      <div className="bg-zinc-950 rounded-lg border border-purple-900/30 shadow-[0_0_20px_-5px_rgba(168,85,247,0.25)] overflow-hidden">
+        <div className="flex border-b border-purple-900/30">
+          <SettingsTab 
+            icon={<Settings size={16} />}
+            text="General"
+            active={true}
+          />
+          <SettingsTab 
+            icon={<Shield size={16} />}
+            text="Security"
+            active={false}
+          />
+          <SettingsTab 
+            icon={<Zap size={16} />}
+            text="Trading Bots"
+            active={false}
+          />
+          <SettingsTab 
+            icon={<Network size={16} />}
+            text="Network"
+            active={false}
+          />
+          <SettingsTab
